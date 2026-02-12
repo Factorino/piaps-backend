@@ -1,0 +1,153 @@
+target-version = "py312"
+line-length = 99
+indent-width = 4
+
+[lint]
+select = ["ALL"]
+ignore = [
+    "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107",
+    "D203",
+    "D212",
+    "D401",
+    "D404",
+    "D405",
+    "ANN401",
+    "PGH003",
+    "PGH004",
+    "N818",
+    "RUF001", "RUF002", "RUF003",
+    "TD002",
+    "TD003",
+    "FIX002",
+    "EM101", "EM102",
+    "TRY003",
+    "ISC001",
+    "COM812",
+    "PLR0913",
+    "PLR2004",
+    "PLR6301",
+    "FBT001", "FBT002",
+    "RET504",
+    "PTH123",
+    "ARG005",
+    "A002",
+    "A003",
+    "A005",
+    "RUF100",
+    "B024", "B027",
+    "G004",
+]
+
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    "*.egg-info",
+    "venv",
+    ".venv",
+    "docs",
+    "migrations",
+    "benchmarks",
+]
+
+fixable = ["ALL"]
+unfixable = []
+
+[lint.flake8-unused-arguments]
+ignore-variadic-names = true
+
+[lint.flake8-bugbear]
+extend-immutable-calls = []
+
+[lint.flake8-quotes]
+inline-quotes = "double"
+multiline-quotes = "double"
+docstring-quotes = "double"
+
+[lint.mccabe]
+max-complexity = 12
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.pep8-naming]
+ignore-names = []
+
+[lint.flake8-annotations]
+allow-star-arg-any = true
+mypy-init-return = true
+
+[lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[lint.isort]
+known-first-party = ["malbrew"]
+combine-as-imports = true
+force-sort-within-sections = true
+lines-between-types = 1
+no-lines-before = ["future", "standard-library"]
+lines-after-imports = 2
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = 99
+
+[lint.pycodestyle]
+ignore-overlong-task-comments = true
+
+[lint.pyupgrade]
+keep-runtime-typing = false
+
+[lint.flake8-comprehensions]
+allow-dict-calls-with-keyword-arguments = false
+
+[lint.per-file-ignores]
+"tests/**.py" = [
+    "S101",
+    "T201",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D107",
+    "ARG001",
+    "ARG002",
+    "ARG003",
+    "PLR2004",
+    "PLR0913",
+    "ANN201",
+    "ANN001",
+    "ANN401",
+]
+"conftest.py" = [
+    "D100",
+    "D103",
+    "ARG001",
+]
+"__init__.py" = [
+    "F401",
+    "F403",
+    "I001",
+    "E402",
+]
+"scripts/*.py" = [
+    "T201"
+]
+"*.pyi" = [
+    "ANN201",
+    "ANN401",
+]

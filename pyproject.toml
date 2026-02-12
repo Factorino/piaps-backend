@@ -1,0 +1,42 @@
+[build-system]
+requires = ["uv_build>=0.8.17,<0.9.0"]
+build-backend = "uv_build"
+
+[project]
+name = "piaps"
+version = "0.1.0"
+description = "PiAPS Coursework backend"
+readme = "README.md"
+requires-python = "~=3.12"
+
+authors = [
+    { name = "Factorino", email = "masenkin73@gmail.com" }
+]
+maintainers = [
+    { name = "Factorino", email = "masenkin73@gmail.com" }
+]
+
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+dependencies = [
+
+]
+
+[project.scripts]
+piaps = "piaps.main.api:main"
+
+[dependency-groups]
+dev = [
+    "ipdb>=0.13.13",
+    "ipython>=9.8.0",
+    "pre-commit>=4.5.0",
+]
+lint = [
+    "mypy>=1.19.0",
+    "ruff>=0.14.8",
+]
