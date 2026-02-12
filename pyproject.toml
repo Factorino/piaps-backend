@@ -5,7 +5,7 @@ build-backend = "uv_build"
 [project]
 name = "piaps"
 version = "0.1.0"
-description = "PiAPS Coursework backend"
+description = "Backend for PiAPS Coursework"
 readme = "README.md"
 requires-python = "~=3.12"
 
