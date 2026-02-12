@@ -1,0 +1,19 @@
+from abc import abstractmethod
+from typing import Protocol
+from uuid import UUID
+
+from piaps.domain.entities.employee import Employee
+
+
+class IEmployeeRepository(Protocol):
+    @abstractmethod
+    async def find_by_id(self, id: UUID) -> Employee | None: ...
+
+    @abstractmethod
+    async def add(self, entity: Employee) -> Employee: ...
+
+    @abstractmethod
+    async def update(self, entity: Employee) -> Employee: ...
+
+    @abstractmethod
+    async def delete(self, entity: Employee) -> None: ...

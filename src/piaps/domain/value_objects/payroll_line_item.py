@@ -8,4 +8,4 @@ from piaps.domain.value_objects.money import Money
 class PayrollLineItem(ValueObject):
     salary_item_id: UUID
     amount: Money
-    conment: str | None = None
+    comment: str | None = None

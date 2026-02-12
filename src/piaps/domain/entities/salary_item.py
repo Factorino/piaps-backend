@@ -1,3 +1,4 @@
+from decimal import Decimal
 from uuid import UUID
 
 from piaps.domain.entities.base import Entity, entity
@@ -12,4 +13,4 @@ class SalaryItem(Entity[UUID]):
     name: str
     item_type: SalaryItemType
     calc_type: CalculationType
-    value: float
+    value: Decimal
