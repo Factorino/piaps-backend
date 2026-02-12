@@ -1,14 +1,10 @@
 from abc import abstractmethod
 from typing import Protocol
-from uuid import UUID
 
 from piaps.domain.entities.payroll import Payroll
 
 
 class IPayrollRepository(Protocol):
-    @abstractmethod
-    async def find_by_id(self, id: UUID) -> Payroll | None: ...
-
     @abstractmethod
     async def add(self, entity: Payroll) -> Payroll: ...
 
