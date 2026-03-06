@@ -1,7 +1,7 @@
 from dataclasses import field
 from enum import StrEnum
 
-from piaps.application.common.dto import dto
+from piaps.application.common.dto.base import dto
 
 
 class SortDirection(StrEnum):
@@ -10,11 +10,11 @@ class SortDirection(StrEnum):
 
 
 @dto
-class SortParam[SortFieldsT: StrEnum]:
-    field: SortFieldsT
+class SortParam[FieldT: StrEnum]:
+    field: FieldT
     direction: SortDirection = SortDirection.ASC
 
 
 @dto
-class Sort[SortFieldsT: StrEnum]:
-    params: list[SortParam[SortFieldsT]] = field(default_factory=list)
+class Sort[FieldT: StrEnum]:
+    params: list[SortParam[FieldT]] = field(default_factory=list)

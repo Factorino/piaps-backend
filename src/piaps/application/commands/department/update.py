@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from piaps.application.common.dto import dto
+from piaps.application.common.dto import base
 from piaps.application.errors.base import NotFoundError
 from piaps.application.interfaces.interactor import IInteractor
 from piaps.application.interfaces.readers.department import IDepartmentReader
@@ -9,14 +9,14 @@ from piaps.application.interfaces.transaction_manager import TransactionManager
 from piaps.domain.entities.department import Department
 
 
-@dto
+@base
 class UpdateDepartmentRequest:
     id: UUID
     name: str | None = None
     description: str | None = None
 
 
-@dto
+@base
 class UpdateDepartmentResponse:
     department: Department
 

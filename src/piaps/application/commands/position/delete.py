@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from piaps.application.common.dto import dto
+from piaps.application.common.dto import base
 from piaps.application.errors.base import NotFoundError
 from piaps.application.interfaces.interactor import IInteractor
 from piaps.application.interfaces.readers.position import IPositionReader
@@ -13,12 +13,12 @@ if TYPE_CHECKING:
     from piaps.domain.entities.position import Position
 
 
-@dto
+@base
 class DeletePositionRequest:
     id: UUID
 
 
-@dto
+@base
 class DeletePositionResponse:
     success: bool
 

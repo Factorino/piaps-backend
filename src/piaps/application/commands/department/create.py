@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from piaps.application.common.dto import dto
+from piaps.application.common.dto import base
 from piaps.application.interfaces.interactor import IInteractor
 from piaps.application.interfaces.readers.department import IDepartmentReader
 from piaps.application.interfaces.repositories.department import IDepartmentRepository
@@ -15,13 +15,13 @@ if TYPE_CHECKING:
     from piaps.domain.value_objects.code import Code
 
 
-@dto
+@base
 class CreateDepartmentRequest:
     name: str
     description: str | None = None
 
 
-@dto
+@base
 class CreateDepartmentResponse:
     department: Department
 

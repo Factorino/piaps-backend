@@ -5,9 +5,13 @@ class ApplicationError(AppError):
     pass
 
 
-class NotFoundError(ApplicationError):
+class OperationFailedError(ApplicationError):
     pass
 
 
-class OperationFailedError(ApplicationError):
+class DataMapperError(OperationFailedError):
+    pass
+
+
+class UnexpectedError(ApplicationError):
     pass

@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from piaps.application.common.dto import dto
+from piaps.application.common.dto import base
 from piaps.application.errors.base import NotFoundError
 from piaps.application.interfaces.interactor import IInteractor
 from piaps.application.interfaces.readers.department import IDepartmentReader
@@ -13,12 +13,12 @@ if TYPE_CHECKING:
     from piaps.domain.entities.department import Department
 
 
-@dto
+@base
 class DeleteDepartmentRequest:
     id: UUID
 
 
-@dto
+@base
 class DeleteDepartmentResponse:
     success: bool
 

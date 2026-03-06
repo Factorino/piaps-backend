@@ -2,54 +2,65 @@ from dataclasses import field
 from enum import StrEnum
 from typing import Any
 
-from piaps.application.common.dto import dto
-from piaps.domain.errors.base import ValidationError
+from piaps.application.common.dto.base import dto
 
 
-class FilterOperator(StrEnum):
-    EQ = "eq"  # value: scalar
-    NE = "ne"  # value: scalar
-    GT = "gt"  # value: scalar
-    GE = "ge"  # value: scalar
-    LT = "lt"  # value: scalar
-    LE = "le"  # value: scalar
-    IN = "in"  # value: list
-    NOT_IN = "not_in"  # value: list
-    LIKE = "like"  # value: str
-    ILIKE = "ilike"  # value: str
-    IS_NULL = "is_null"  # value: None
-    IS_NOT_NULL = "is_not_null"  # value: None
+class OperatorScalar(StrEnum):
+    EQ = "eq"
+    NE = "ne"
+    GT = "gt"
+    GE = "ge"
+    LT = "lt"
+    LE = "le"
 
 
-_ListOperators: list[FilterOperator] = [
-    FilterOperator.IN,
-    FilterOperator.NOT_IN,
-]
+class OperatorStr(StrEnum):
+    LIKE = "like"
+    ILIKE = "ilike"
 
-_NoValueOperators: list[FilterOperator] = [
-    FilterOperator.IS_NULL,
-    FilterOperator.IS_NOT_NULL,
-]
+
+class OperatorList(StrEnum):
+    IN = "in"
+    NOT_IN = "not_in"
+
+
+class OperatorNull(StrEnum):
+    IS_NULL = "is_null"
+    IS_NOT_NULL = "is_not_null"
 
 
 @dto
-class FilterParam[FilterFieldsT: StrEnum]:
-    field: FilterFieldsT
-    operator: FilterOperator
-    value: Any | None = None
-
-    def __post_init__(self) -> None:
-        self._validate()
-
-    def _validate(self) -> None:
-        if self.operator in _NoValueOperators and self.value is not None:
-            raise ValidationError(f"Operator {self.operator} must have value=None")
-        if self.operator not in _NoValueOperators and self.value is None:
-            raise ValidationError(f"Operator {self.operator} requires a value")
-        if self.operator in _ListOperators and not isinstance(self.value, list):
-            raise ValidationError(f"Operator {self.operator} requires a list value")
+class FilterScalar[FieldT: StrEnum]:
+    field: FieldT
+    operator: OperatorScalar
+    value: int | float | str | bool
 
 
 @dto
-class Filter[FilterFieldsT: StrEnum]:
-    params: list[FilterParam[FilterFieldsT]] = field(default_factory=list)
+class FilterStr[FieldT: StrEnum]:
+    field: FieldT
+    operator: OperatorStr
+    value: str
+
+
+@dto
+class FilterList[FieldT: StrEnum]:
+    field: FieldT
+    operator: OperatorList
+    value: list[Any]
+
+
+@dto
+class FilterNull[FieldT: StrEnum]:
+    field: FieldT
+    operator: OperatorNull
+
+
+type AnyFilter[FieldT: StrEnum] = (
+    FilterScalar[FieldT] | FilterStr[FieldT] | FilterList[FieldT] | FilterNull[FieldT]
+)
+
+
+@dto
+class Filter[FieldT: StrEnum]:
+    params: list[AnyFilter[FieldT]] = field(default_factory=list)

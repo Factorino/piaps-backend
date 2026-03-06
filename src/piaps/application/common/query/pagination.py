@@ -1,11 +1,16 @@
 import math
+from typing import ClassVar
 
-from piaps.application.common.dto import dto
+from piaps.application.common.dto.base import dto
 from piaps.domain.errors.base import ValidationError
 
 
 @dto
 class BasePagination:
+    _MIN_PAGE: ClassVar[int] = 1
+    _MIN_PAGE_SIZE: ClassVar[int] = 1
+    _MAX_PAGE_SIZE: ClassVar[int] = 100
+
     page: int
     page_size: int
 
@@ -21,10 +26,14 @@ class BasePagination:
         return self.page_size
 
     def _validate(self) -> None:
-        if self.page_size <= 0:
-            raise ValidationError("page_size must be positive")
-        if self.page <= 0:
-            raise ValidationError("page must be positive")
+        if self.page < self._MIN_PAGE:
+            raise ValidationError(f"Page must be greater or equal {self._MIN_PAGE}")
+
+        if self.page_size < self._MIN_PAGE_SIZE:
+            raise ValidationError(f"Page size must be greater or equal {self._MIN_PAGE_SIZE}")
+
+        if self.page_size > self._MAX_PAGE_SIZE:
+            raise ValidationError(f"Page size must be less or equal {self._MAX_PAGE_SIZE}")
 
 
 @dto
@@ -54,3 +63,6 @@ class PaginationResultMeta(BasePagination):
 class PaginationResult[DataT]:
     data: list[DataT]
     meta: PaginationResultMeta
+
+
+DEFAULT_PAGINATION = Pagination()

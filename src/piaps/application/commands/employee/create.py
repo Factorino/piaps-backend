@@ -2,7 +2,7 @@ from datetime import date
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from piaps.application.common.dto import dto
+from piaps.application.common.dto import base
 from piaps.application.interfaces.interactor import IInteractor
 from piaps.application.interfaces.readers.department import IDepartmentReader
 from piaps.application.interfaces.readers.employee import IEmployeeReader
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from piaps.domain.value_objects.code import Code
 
 
-@dto
+@base
 class CreateEmployeeRequest:
     last_name: str
     first_name: str
@@ -28,7 +28,7 @@ class CreateEmployeeRequest:
     department_id: UUID
 
 
-@dto
+@base
 class CreateEmployeeResponse:
     employee: Employee
 
@@ -41,7 +41,7 @@ class CreateEmployee(IInteractor[CreateEmployeeRequest, CreateEmployeeResponse])
         position_reader: IPositionReader,
         department_reader: IDepartmentReader,
         code_generator: CodeGenerator,
-        uow: TransactionManager,    
+        uow: TransactionManager,
     ) -> None:
         self._repository: IEmployeeRepository = repository
         self._employee_reader: IEmployeeReader = employee_reader
