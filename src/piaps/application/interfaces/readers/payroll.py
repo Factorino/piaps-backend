@@ -16,7 +16,6 @@ class PayrollFilterField(StrEnum):
     PERIOD_MONTH = "period.month"
     STATUS = "status"
     BASE_SALARY = "base_salary"
-    NET_SALARY = "net_salary"
 
 
 class PayrollSortField(StrEnum):
@@ -26,10 +25,9 @@ class PayrollSortField(StrEnum):
     PERIOD_MONTH = "period.month"
     STATUS = "status"
     BASE_SALARY = "base_salary"
-    NET_SALARY = "net_salary"
 
 
-class IDepartmentReader(Protocol):
+class IPayrollReader(Protocol):
     @abstractmethod
     async def find_by_id(self, id: UUID) -> Payroll | None: ...
 

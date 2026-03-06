@@ -23,8 +23,8 @@ class BasePagination:
     def _validate(self) -> None:
         if self.page_size <= 0:
             raise ValidationError("page_size must be positive")
-        if self.page < 1:
-            raise ValidationError("page must be greater than 1")
+        if self.page <= 0:
+            raise ValidationError("page must be positive")
 
 
 @dto

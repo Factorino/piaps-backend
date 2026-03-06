@@ -34,7 +34,7 @@ class ISalaryItemReader(Protocol):
     async def find_by_code(self, code: Code) -> SalaryItem | None: ...
 
     @abstractmethod
-    async def find_all(
+    async def search(
         self,
         filter: Filter[SalaryItemFilterField] | None = None,
         sort: Sort[SalaryItemSortField] | None = None,

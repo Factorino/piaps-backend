@@ -34,7 +34,7 @@ class IEmployeeReader(Protocol):
     async def find_by_code(self, code: Code) -> Employee | None: ...
 
     @abstractmethod
-    async def find_all(
+    async def search(
         self,
         filter: Filter[EmployeeFilterField] | None = None,
         sort: Sort[EmployeeSortField] | None = None,

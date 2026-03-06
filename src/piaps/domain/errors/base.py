@@ -12,3 +12,7 @@ class ValidationError(DomainError, ValueError, TypeError):
 
 class AlreadyExistsError(DomainError):
     pass
+
+
+class NotFoundError(DomainError):
+    pass

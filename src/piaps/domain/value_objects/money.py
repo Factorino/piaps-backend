@@ -1,8 +1,60 @@
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
+from typing import ClassVar
 
+from piaps.domain.errors.base import ValidationError
 from piaps.domain.value_objects.base import ValueObject, value_object
 
 
 @value_object
 class Money(ValueObject):
+    _MAX_DIGITS: ClassVar[int] = 15
+    _DECIMAL_PLACES: ClassVar[int] = 2
+    _QUANTIZE_EXP: ClassVar[Decimal] = Decimal("0.01")
+
     value: Decimal
+
+    def __post_init__(self) -> None:
+        self._validate()
+
+    def __add__(self, other: "Money") -> "Money":
+        if not isinstance(other, Money):
+            return NotImplemented
+        return Money(value=self.value + other.value)
+
+    def __sub__(self, other: "Money") -> "Money":
+        if not isinstance(other, Money):
+            return NotImplemented
+
+        result: Decimal = self.value - other.value
+        if result < Decimal(0):
+            raise ValueError("Money subtraction result must be non-negative")
+
+        return Money(value=result)
+
+    def __mul__(self, factor: Decimal) -> "Money":
+        if not isinstance(factor, (Decimal, int)):
+            return NotImplemented
+        return Money(value=self.value * factor)
+
+    def _validate(self) -> None:
+        if not isinstance(self.value, Decimal):
+            try:
+                object.__setattr__(self, "value", Decimal(str(self.value)))
+            except InvalidOperation as e:
+                raise ValueError(
+                    f"Invalid money value: cannot convert '{self.value}' to Decimal"
+                ) from e
+
+        if self.value < Decimal(0):
+            raise ValidationError("Invalid money value: money value must be non-negative")
+
+        quantized: Decimal = self.value.quantize(self._QUANTIZE_EXP, rounding=ROUND_HALF_UP)
+        integer_digits: int = len(str(quantized).replace("-", "").split(".")[0])
+        max_integer_digits: int = self._MAX_DIGITS - self._DECIMAL_PLACES
+        if integer_digits > max_integer_digits:
+            raise ValidationError(
+                f"Invalid money value: money value exceeds maximum of {max_integer_digits}"
+                f"integer digits"
+            )
+
+        object.__setattr__(self, "value", quantized)

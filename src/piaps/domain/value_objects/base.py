@@ -5,7 +5,7 @@ from typing import Any, Self, dataclass_transform
 
 @dataclass_transform(kw_only_default=True, frozen_default=True)
 def value_object[ClsT](cls: type[ClsT]) -> type[ClsT]:
-    return dataclass(cls, frozen=True, slots=True, kw_only=True)
+    return dataclass(cls, frozen=True, kw_only=True)
 
 
 @value_object

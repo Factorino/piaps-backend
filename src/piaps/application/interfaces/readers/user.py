@@ -27,7 +27,7 @@ class IUserReader(Protocol):
     async def find_by_id(self, id: UUID) -> User | None: ...
 
     @abstractmethod
-    async def find_all(
+    async def search(
         self,
         filter: Filter[UserFilterField] | None = None,
         sort: Sort[UserSortField] | None = None,

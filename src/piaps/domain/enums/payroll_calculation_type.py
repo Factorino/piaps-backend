@@ -1,6 +1,6 @@
 from enum import StrEnum
 
 
-class CalculationType(StrEnum):
+class PayrollCalculationType(StrEnum):
     FIXED = "fixed"
     PERCENT = "percent"
