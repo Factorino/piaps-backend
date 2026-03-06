@@ -21,6 +21,9 @@ class Money(ValueObject):
             return NotImplemented
         return Money(value=self.value + other.value)
 
+    def __radd__(self, other: "Money") -> "Money":
+        return self.__add__(other)
+
     def __sub__(self, other: "Money") -> "Money":
         if not isinstance(other, Money):
             return NotImplemented
@@ -31,10 +34,18 @@ class Money(ValueObject):
 
         return Money(value=result)
 
+    def __rsub__(self, other: "Money") -> "Money":
+        if not isinstance(other, Money):
+            return NotImplemented
+        return other.__sub__(self)
+
     def __mul__(self, factor: Decimal) -> "Money":
         if not isinstance(factor, (Decimal, int)):
             return NotImplemented
         return Money(value=self.value * factor)
+
+    def __rmul__(self, factor: Decimal) -> "Money":
+        return self.__mul__(factor)
 
     def _validate(self) -> None:
         if not isinstance(self.value, Decimal):

@@ -1,32 +1,38 @@
-from decimal import Decimal
-
-from piaps.domain.entities.payroll import Payroll
-from piaps.domain.entities.salary_item import SalaryItem
+from piaps.domain.entities.payroll_item import PayrollItem
 from piaps.domain.enums.payroll_calculation_type import PayrollCalculationType
+from piaps.domain.errors.payroll import InvalidCalculationTypeError, PayrollValueNotSetError
 from piaps.domain.value_objects.money import Money
-from piaps.domain.value_objects.payroll_line_item import PayrollLineItem
 
 
 class PayrollService:
-    def add_record(
+    def calculate(
         self,
-        payroll: Payroll,
-        accrual: SalaryItem,
-        amount: Decimal | None = None,
-        comment: str | None = None,
-    ) -> Payroll:
-        money_amount: Decimal = amount if amount is not None else accrual.value
+        payroll_item: PayrollItem,
+        base_salary: Money,
+        amount: Money | None = None,
+    ) -> Money:
+        match payroll_item.calc_type:
+            case PayrollCalculationType.FIXED:
+                return self._fixed(payroll_item, amount)
+            case PayrollCalculationType.PERCENT:
+                return self._percent(payroll_item, base_salary)
+            case _:
+                raise InvalidCalculationTypeError(
+                    f"Unsupported calculation type: '{payroll_item.calc_type}'"
+                )
 
-        if accrual.calc_type == PayrollCalculationType.PERCENT:
-            net_salary: Money = payroll.net_salary
-            money_amount = net_salary.value * money_amount / 100
+    def _fixed(self, payroll_item: PayrollItem, amount: Money | None) -> Money:
+        if amount is not None:
+            return amount
+        if payroll_item.value is None:
+            raise PayrollValueNotSetError(
+                f"PayrollItem '{payroll_item.code}' has no fixed value set"
+            )
+        return Money(value=payroll_item.value)
 
-        money = Money(value=money_amount)
-        item = PayrollLineItem(
-            salary_item_id=accrual.id,
-            amount=money,
-            comment=comment,
-        )
-
-        payroll.add_accrual(item)
-        return payroll
+    def _percent(self, payroll_item: PayrollItem, base_salary: Money) -> Money:
+        if payroll_item.value is None:
+            raise PayrollValueNotSetError(
+                f"PayrollItem '{payroll_item.code}' has no percent rate set"
+            )
+        return base_salary * payroll_item.value

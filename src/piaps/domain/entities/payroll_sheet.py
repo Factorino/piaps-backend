@@ -10,7 +10,7 @@ from piaps.domain.entities.payroll_record import PayrollRecord, PayrollRecordId
 from piaps.domain.enums.payroll_item_type import PayrollItemType
 from piaps.domain.enums.payroll_status import PayrollStatus
 from piaps.domain.errors.base import NotFoundError
-from piaps.domain.errors.payroll import InvalidPayrollRecord, InvalidPayrollStatus
+from piaps.domain.errors.payroll import InvalidPayrollRecordError, InvalidPayrollStatusError
 from piaps.domain.value_objects.money import Money
 
 
@@ -47,9 +47,9 @@ class PayrollSheet(Entity[PayrollSheetId]):
     def add_record(self, record: PayrollRecord) -> None:
         self._ensure_draft()
         if record.employee_id != self.employee_id:
-            raise InvalidPayrollRecord("Record employee_id does not match sheet employee_id")
+            raise InvalidPayrollRecordError("Record employee_id does not match sheet employee_id")
         if record.period != self.period:
-            raise InvalidPayrollRecord("Record period does not match sheet period")
+            raise InvalidPayrollRecordError("Record period does not match sheet period")
         self.records.append(record)
 
     def remove_record(self, record_id: PayrollRecordId) -> None:
@@ -82,7 +82,7 @@ class PayrollSheet(Entity[PayrollSheetId]):
 
     def _ensure_draft(self) -> None:
         if self.status != PayrollStatus.DRAFT:
-            raise InvalidPayrollStatus("Payroll sheet is not in draft status")
+            raise InvalidPayrollStatusError("Payroll sheet is not in draft status")
 
     def _set_status(self, new_status: PayrollStatus) -> None:
         self.status = new_status

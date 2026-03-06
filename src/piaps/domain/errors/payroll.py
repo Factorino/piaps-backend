@@ -1,9 +1,17 @@
 from piaps.domain.errors.base import DomainError
 
 
-class InvalidPayrollStatus(DomainError):
+class InvalidPayrollStatusError(DomainError):
     pass
 
 
-class InvalidPayrollRecord(DomainError):
+class InvalidCalculationTypeError(DomainError):
+    pass
+
+
+class InvalidPayrollRecordError(DomainError):
+    pass
+
+
+class PayrollValueNotSetError(DomainError):
     pass

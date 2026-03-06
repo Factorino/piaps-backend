@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import NewType
 from uuid import UUID
 
@@ -17,3 +18,4 @@ class PayrollItem(Entity[PayrollItemId]):
     name: Name
     payroll_type: PayrollItemType
     calc_type: PayrollCalculationType
+    value: Decimal | None = None
