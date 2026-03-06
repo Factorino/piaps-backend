@@ -7,8 +7,8 @@ from piaps.domain.value_objects.base import ValueObject, value_object
 
 @value_object
 class Code(ValueObject):
+    UID_LENGTH: ClassVar[int] = 8
     _DELIMITER: ClassVar[str] = "-"
-    _UID_LENGTH: ClassVar[int] = 8
     _PREFIX_FMT: ClassVar[re.Pattern] = re.compile(r"^[A-Z]+$")
 
     prefix: str
@@ -36,7 +36,7 @@ class Code(ValueObject):
                 "Invalid code format: code prefix must be uppercase letters only"
             )
 
-        if len(self.uid) != self._UID_LENGTH:
+        if len(self.uid) != self.UID_LENGTH:
             raise ValidationError(
-                f"Invalid code format: code uid must be {self._UID_LENGTH} characters"
+                f"Invalid code format: code uid must be {self.UID_LENGTH} characters"
             )

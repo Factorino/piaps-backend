@@ -1,32 +1,28 @@
-from typing import ClassVar
+from typing import Final
 import uuid
 
+from piaps.domain.entities.base import Entity
 from piaps.domain.entities.department import Department
 from piaps.domain.entities.employee import Employee
+from piaps.domain.entities.payroll_item import PayrollItem
 from piaps.domain.entities.position import Position
-from piaps.domain.entities.salary_item import SalaryItem
-from piaps.domain.errors.base import DomainError
 from piaps.domain.value_objects.code import Code
 
 
 class CodeGenerator:
-    _UUID_LENGTH: ClassVar[int] = 12
-    _PREFIXES: ClassVar[dict[type, str]] = {
+    _PREFIXES: Final[dict[type, str]] = {
         Department: "DEP",
         Employee: "EMPL",
+        PayrollItem: "PRL",
         Position: "POS",
-        SalaryItem: "SAL",
     }
 
-    def generate(self, entity: object) -> Code:
+    def generate(self, entity: Entity) -> Code:
         entity_type = type(entity)
         prefix: str | None = self._PREFIXES.get(entity_type)
 
         if prefix is None:
-            raise DomainError
+            raise ValueError(f"No code prefix registered for entity type '{entity_type.__name__}'")
 
-        return self._generate_code(prefix)
-
-    def _generate_code(self, prefix: str) -> Code:
-        short_uid: str = uuid.uuid4().hex[: self._UUID_LENGTH]
-        return Code(value=f"{prefix}_{short_uid}")
+        uid: str = uuid.uuid4().hex[: Code.UID_LENGTH]
+        return Code(prefix=prefix, uid=uid)
