@@ -6,9 +6,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from piaps.application.interfaces.repositories.position import IPositionRepository
 from piaps.domain.entities.position import Position
-from piaps.infrastructure.database.mapper import get_mapper
+from piaps.infrastructure.database.common.mapper import get_mapper
 from piaps.infrastructure.database.models.position import PositionORM
 from piaps.infrastructure.database.repositories.base import SAAbstractRepository
+
+
+class SAPositionRepository(IPositionRepository, SAAbstractRepository[Position, PositionORM]):
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(session)
+
+    def _to_orm(self, entity: Position) -> PositionORM:
+        return _to_orm(entity)
 
 
 _to_orm: Callable[[Position], PositionORM] = get_mapper(
@@ -20,11 +28,3 @@ _to_orm: Callable[[Position], PositionORM] = get_mapper(
         link(P[Position].base_salary, P[PositionORM].base_salary, coercer=lambda m: m.value),
     ],
 )
-
-
-class SAPositionRepository(IPositionRepository, SAAbstractRepository[Position, PositionORM]):
-    def __init__(self, session: AsyncSession) -> None:
-        super().__init__(session)
-
-    def _to_orm(self, entity: Position) -> PositionORM:
-        return _to_orm(entity)
