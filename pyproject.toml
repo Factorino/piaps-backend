@@ -24,7 +24,14 @@ classifiers = [
 ]
 
 dependencies = [
-
+    "adaptix>=3.0.0b11",
+    "alembic>=1.18.4",
+    "bcrypt>=5.0.0",
+    "dishka>=1.8.0",
+    "fastapi[python-multipart]>=0.135.1",
+    "pyjwt[crypto]>=2.11.0",
+    "sqlalchemy[aiosqlite]>=2.0.48",
+    "uvicorn>=0.41.0",
 ]
 
 [project.scripts]
