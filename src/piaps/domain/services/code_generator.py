@@ -1,3 +1,4 @@
+from types import MappingProxyType
 from typing import Final
 import uuid
 
@@ -10,12 +11,14 @@ from piaps.domain.value_objects.code import Code
 
 
 class CodeGenerator:
-    _PREFIXES: Final[dict[type, str]] = {
-        Department: "DEP",
-        Employee: "EMPL",
-        PayrollItem: "PRL",
-        Position: "POS",
-    }
+    _PREFIXES: Final[MappingProxyType[type, str]] = MappingProxyType(
+        {
+            Department: "DEP",
+            Employee: "EMPL",
+            PayrollItem: "PRL",
+            Position: "POS",
+        }
+    )
 
     def generate(self, entity: Entity) -> Code:
         entity_type = type(entity)
