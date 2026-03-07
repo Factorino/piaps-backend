@@ -1,18 +1,20 @@
 from datetime import date
 from typing import Any
-from uuid import UUID
 
-from sqlalchemy import UUID as SAUUID, Date, ForeignKey, String
+from sqlalchemy import UUID, Date, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
+from piaps.domain.entities.department import DepartmentId
+from piaps.domain.entities.employee import EmployeeId
+from piaps.domain.entities.position import PositionId
 from piaps.infrastructure.database.models.base import BaseORM
 
 
 class EmployeeORM(BaseORM):
     __tablename__: Any = "employees"
 
-    id: Mapped[UUID] = mapped_column(
-        SAUUID(as_uuid=True),
+    id: Mapped[EmployeeId] = mapped_column(
+        UUID(as_uuid=True),
         primary_key=True,
     )
 
@@ -34,14 +36,16 @@ class EmployeeORM(BaseORM):
         nullable=False,
     )
 
-    position_id: Mapped[UUID] = mapped_column(
-        ForeignKey("positions.id"),
+    department_id: Mapped[DepartmentId] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("departments.id"),
         nullable=False,
         index=True,
     )
 
-    department_id: Mapped[UUID] = mapped_column(
-        ForeignKey("departments.id"),
+    position_id: Mapped[PositionId] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("positions.id"),
         nullable=False,
         index=True,
     )

@@ -1,10 +1,10 @@
 from decimal import Decimal
 from typing import Any
-from uuid import UUID
 
-from sqlalchemy import UUID as SAUUID, Enum, Numeric, String
+from sqlalchemy import UUID, Enum, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column
 
+from piaps.domain.entities.payroll_item import PayrollItemId
 from piaps.domain.enums.payroll_calculation_type import PayrollCalculationType
 from piaps.domain.enums.payroll_item_type import PayrollItemType
 from piaps.infrastructure.database.models.base import BaseORM
@@ -13,8 +13,8 @@ from piaps.infrastructure.database.models.base import BaseORM
 class PayrollItemORM(BaseORM):
     __tablename__: Any = "payroll_items"
 
-    id: Mapped[UUID] = mapped_column(
-        SAUUID(as_uuid=True),
+    id: Mapped[PayrollItemId] = mapped_column(
+        UUID(as_uuid=True),
         primary_key=True,
     )
 

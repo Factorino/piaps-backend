@@ -1,17 +1,17 @@
 from typing import Any
-from uuid import UUID
 
-from sqlalchemy import UUID as SAUUID, String, Text
+from sqlalchemy import UUID, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
+from piaps.domain.entities.department import DepartmentId
 from piaps.infrastructure.database.models.base import BaseORM
 
 
 class DepartmentORM(BaseORM):
     __tablename__: Any = "departments"
 
-    id: Mapped[UUID] = mapped_column(
-        SAUUID(as_uuid=True),
+    id: Mapped[DepartmentId] = mapped_column(
+        UUID(as_uuid=True),
         primary_key=True,
     )
 

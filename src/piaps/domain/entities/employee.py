@@ -17,5 +17,5 @@ class Employee(Entity[EmployeeId]):
     code: Code
     full_name: FullName
     hire_date: date
-    position_id: PositionId
     department_id: DepartmentId
+    position_id: PositionId

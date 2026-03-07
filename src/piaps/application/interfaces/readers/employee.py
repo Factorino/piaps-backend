@@ -19,8 +19,8 @@ class EmployeeFilterField(StrEnum):
     CODE = "code"
     FULL_NAME = "full_name"
     HIRE_DATE = "hire_date"
-    POSITION_ID = "position_id"
     DEPARTMENT_ID = "department_id"
+    POSITION_ID = "position_id"
 
 
 class EmployeeSortField(StrEnum):

@@ -1,11 +1,10 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from piaps.application.interfaces.repositories.payroll_sheet import IPayrollSheetRepository
 from piaps.domain.entities.payroll_record import PayrollRecord
 from piaps.domain.entities.payroll_sheet import PayrollSheet, PayrollSheetId
 from piaps.infrastructure.database.models.payroll_record import PayrollRecordORM
 from piaps.infrastructure.database.models.payroll_sheet import PayrollSheetORM
 from piaps.infrastructure.database.repositories.base import SAAbstractRepository
+
 
 def _record_entity_to_orm(record: PayrollRecord, sheet_id: PayrollSheetId) -> PayrollRecordORM:
     return PayrollRecordORM(
@@ -30,12 +29,8 @@ def _sheet_entity_to_orm(sheet: PayrollSheet) -> PayrollSheetORM:
     return orm
 
 
-
 class SAPayrollSheetRepository(
     IPayrollSheetRepository, SAAbstractRepository[PayrollSheet, PayrollSheetORM]
 ):
-    def __init__(self, session: AsyncSession) -> None:
-        super().__init__(session)
-
     def _to_orm(self, entity: PayrollSheet) -> PayrollSheetORM:
         return _sheet_entity_to_orm(entity)

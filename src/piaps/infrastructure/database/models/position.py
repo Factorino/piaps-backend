@@ -1,18 +1,18 @@
 from decimal import Decimal
 from typing import Any
-from uuid import UUID
 
-from sqlalchemy import UUID as SAUUID, Numeric, String, Text
+from sqlalchemy import UUID, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
+from piaps.domain.entities.position import PositionId
 from piaps.infrastructure.database.models.base import BaseORM
 
 
 class PositionORM(BaseORM):
     __tablename__: Any = "positions"
 
-    id: Mapped[UUID] = mapped_column(
-        SAUUID(as_uuid=True),
+    id: Mapped[PositionId] = mapped_column(
+        UUID(as_uuid=True),
         primary_key=True,
     )
 

@@ -2,7 +2,6 @@ from collections.abc import Callable
 
 from adaptix import P
 from adaptix.conversion import link
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from piaps.application.interfaces.repositories.department import IDepartmentRepository
 from piaps.domain.entities.department import Department
@@ -24,8 +23,5 @@ _to_orm: Callable[[Department], DepartmentORM] = get_mapper(
 class SADepartmentRepository(
     IDepartmentRepository, SAAbstractRepository[Department, DepartmentORM]
 ):
-    def __init__(self, session: AsyncSession) -> None:
-        super().__init__(session)
-
     def _to_orm(self, entity: Department) -> DepartmentORM:
         return _to_orm(entity)

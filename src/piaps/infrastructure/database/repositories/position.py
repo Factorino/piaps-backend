@@ -2,7 +2,6 @@ from collections.abc import Callable
 
 from adaptix import P
 from adaptix.conversion import link
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from piaps.application.interfaces.repositories.position import IPositionRepository
 from piaps.domain.entities.position import Position
@@ -23,8 +22,5 @@ _to_orm: Callable[[Position], PositionORM] = get_mapper(
 
 
 class SAPositionRepository(IPositionRepository, SAAbstractRepository[Position, PositionORM]):
-    def __init__(self, session: AsyncSession) -> None:
-        super().__init__(session)
-
     def _to_orm(self, entity: Position) -> PositionORM:
         return _to_orm(entity)

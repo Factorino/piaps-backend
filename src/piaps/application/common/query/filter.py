@@ -54,6 +54,7 @@ class FilterList[FieldT: StrEnum]:
 class FilterNull[FieldT: StrEnum]:
     field: FieldT
     operator: OperatorNull
+    value: None = None
 
 
 type AnyFilter[FieldT: StrEnum] = (

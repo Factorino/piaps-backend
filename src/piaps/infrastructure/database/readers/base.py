@@ -30,7 +30,7 @@ from piaps.domain.entities.base import Entity
 from piaps.infrastructure.database.models.base import BaseORM
 
 
-_OPERATORS_MAP: Final[MappingProxyType[StrEnum, OperatorType | Callable]] = MappingProxyType(
+_OPERATORS_MAP: Final[MappingProxyType[StrEnum, OperatorType]] = MappingProxyType(
     {
         OperatorScalar.EQ: operators.eq,
         OperatorScalar.NE: operators.ne,
@@ -69,7 +69,7 @@ class SAAbstractReader[EntityT: Entity, ORMT: BaseORM](ABC):
     def _to_domain(self, orm_obj: ORMT) -> EntityT:
         raise NotImplementedError
 
-    async def _execute(self, query: Select) -> Result[Any]:
+    async def _execute[T](self, query: Select[tuple[T]]) -> Result[tuple[T]]:
         try:
             return await self._session.execute(query)
         except SQLAlchemyError as e:
@@ -88,11 +88,11 @@ class SAAbstractReader[EntityT: Entity, ORMT: BaseORM](ABC):
             query = select(self._model)
 
         query = self._apply_filter(query, filter)
+        query = self._apply_sort(query, sort)
 
         # Count total before pagination
         total: int = await self._count(query)
 
-        query = self._apply_sort(query, sort)
         query = self._apply_pagination(query, pagination)
 
         result: Result[tuple[ORMT]] = await self._execute(query)
@@ -119,10 +119,9 @@ class SAAbstractReader[EntityT: Entity, ORMT: BaseORM](ABC):
             return query
 
         for param in filter.params:
-            operator: OperatorType | Callable = _OPERATORS_MAP[param.operator]
+            operator: OperatorType = _OPERATORS_MAP[param.operator]
             column: InstrumentedAttribute = self._filter_map[param.field]
-            value: Any | None = getattr(param, "value", None)
-            query = query.where(operator(column, value))
+            query = query.where(operator(column, param.value))
 
         return query
 

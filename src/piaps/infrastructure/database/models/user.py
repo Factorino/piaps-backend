@@ -1,9 +1,10 @@
 from typing import Any
-from uuid import UUID
 
-from sqlalchemy import UUID as SAUUID, Enum, ForeignKey, LargeBinary, String
+from sqlalchemy import UUID, Enum, ForeignKey, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column
 
+from piaps.domain.entities.employee import EmployeeId
+from piaps.domain.entities.user import UserId
 from piaps.domain.enums.user_role import UserRole
 from piaps.infrastructure.database.models.base import BaseORM
 
@@ -11,8 +12,8 @@ from piaps.infrastructure.database.models.base import BaseORM
 class UserORM(BaseORM):
     __tablename__: Any = "users"
 
-    id: Mapped[UUID] = mapped_column(
-        SAUUID(as_uuid=True),
+    id: Mapped[UserId] = mapped_column(
+        UUID(as_uuid=True),
         primary_key=True,
     )
 
@@ -34,7 +35,8 @@ class UserORM(BaseORM):
         nullable=False,
     )
 
-    employee_id: Mapped[UUID | None] = mapped_column(
+    employee_id: Mapped[EmployeeId | None] = mapped_column(
+        UUID(as_uuid=True),
         ForeignKey("employees.id"),
         nullable=True,
     )

@@ -2,7 +2,6 @@ from collections.abc import Callable
 
 from adaptix import P
 from adaptix.conversion import link
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from piaps.application.interfaces.repositories.payroll_item import IPayrollItemRepository
 from piaps.domain.entities.payroll_item import PayrollItem
@@ -24,8 +23,5 @@ _to_orm: Callable[[PayrollItem], PayrollItemORM] = get_mapper(
 class SAPayrollItemRepository(
     IPayrollItemRepository, SAAbstractRepository[PayrollItem, PayrollItemORM]
 ):
-    def __init__(self, session: AsyncSession) -> None:
-        super().__init__(session)
-
     def _to_orm(self, entity: PayrollItem) -> PayrollItemORM:
         return _to_orm(entity)

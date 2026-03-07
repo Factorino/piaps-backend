@@ -10,6 +10,7 @@ from piaps.application.common.query.pagination import (
     PaginationResult,
 )
 from piaps.application.common.query.sort import Sort
+from piaps.domain.entities.department import DepartmentId
 from piaps.domain.entities.employee import EmployeeId
 from piaps.domain.entities.payroll_sheet import PayrollSheet, PayrollSheetId
 from piaps.domain.enums.payroll_status import PayrollStatus
@@ -49,6 +50,17 @@ class IPayrollSheetReader(Protocol):
     async def search_by_employee(
         self,
         employee_id: EmployeeId,
+        period: date | None = None,
+        status: PayrollStatus | None = None,
+        sort: Sort[PayrollSheetSortField] | None = None,
+        pagination: Pagination = DEFAULT_PAGINATION,
+    ) -> PaginationResult[PayrollSheet]: ...
+
+    @abstractmethod
+    async def search_by_department(
+        self,
+        department_id: DepartmentId,
+        period: date | None = None,
         status: PayrollStatus | None = None,
         sort: Sort[PayrollSheetSortField] | None = None,
         pagination: Pagination = DEFAULT_PAGINATION,
