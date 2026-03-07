@@ -7,17 +7,6 @@ from piaps.infrastructure.database.models.payroll_record import PayrollRecordORM
 from piaps.infrastructure.database.models.payroll_sheet import PayrollSheetORM
 from piaps.infrastructure.database.repositories.base import SAAbstractRepository
 
-
-class SAPayrollSheetRepository(
-    IPayrollSheetRepository, SAAbstractRepository[PayrollSheet, PayrollSheetORM]
-):
-    def __init__(self, session: AsyncSession) -> None:
-        super().__init__(session)
-
-    def _to_orm(self, entity: PayrollSheet) -> PayrollSheetORM:
-        return _sheet_entity_to_orm(entity)
-
-
 def _record_entity_to_orm(record: PayrollRecord, sheet_id: PayrollSheetId) -> PayrollRecordORM:
     return PayrollRecordORM(
         id=record.id,
@@ -39,3 +28,14 @@ def _sheet_entity_to_orm(sheet: PayrollSheet) -> PayrollSheetORM:
     )
     orm.records = [_record_entity_to_orm(r, sheet.id) for r in sheet.records]
     return orm
+
+
+
+class SAPayrollSheetRepository(
+    IPayrollSheetRepository, SAAbstractRepository[PayrollSheet, PayrollSheetORM]
+):
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(session)
+
+    def _to_orm(self, entity: PayrollSheet) -> PayrollSheetORM:
+        return _sheet_entity_to_orm(entity)

@@ -26,7 +26,7 @@ class PayrollSheetSortField(StrEnum):
     STATUS = "status"
 
 
-class PayrollSheetReader(Protocol):
+class IPayrollSheetReader(Protocol):
     @abstractmethod
     async def find_by_id(self, id: PayrollSheetId) -> PayrollSheet | None: ...
 

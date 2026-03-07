@@ -11,14 +11,6 @@ from piaps.infrastructure.database.models.employee import EmployeeORM
 from piaps.infrastructure.database.repositories.base import SAAbstractRepository
 
 
-class SAEmployeeRepository(IEmployeeRepository, SAAbstractRepository[Employee, EmployeeORM]):
-    def __init__(self, session: AsyncSession) -> None:
-        super().__init__(session)
-
-    def _to_orm(self, entity: Employee) -> EmployeeORM:
-        return _to_orm(entity)
-
-
 _to_orm: Callable[[Employee], EmployeeORM] = get_mapper(
     Employee,
     EmployeeORM,
@@ -27,3 +19,11 @@ _to_orm: Callable[[Employee], EmployeeORM] = get_mapper(
         link(P[Employee].full_name, P[EmployeeORM].full_name, coercer=lambda fn: fn.full),
     ],
 )
+
+
+class SAEmployeeRepository(IEmployeeRepository, SAAbstractRepository[Employee, EmployeeORM]):
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(session)
+
+    def _to_orm(self, entity: Employee) -> EmployeeORM:
+        return _to_orm(entity)

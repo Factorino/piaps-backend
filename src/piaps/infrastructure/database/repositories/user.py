@@ -12,14 +12,6 @@ from piaps.infrastructure.database.models.user import UserORM
 from piaps.infrastructure.database.repositories.base import SAAbstractRepository
 
 
-class SAUserRepository(IUserRepository, SAAbstractRepository[User, UserORM]):
-    def __init__(self, session: AsyncSession) -> None:
-        super().__init__(session)
-
-    def _to_orm(self, entity: User) -> UserORM:
-        return _to_orm(entity)
-
-
 _to_orm: Callable[[User], UserORM] = get_mapper(
     User,
     UserORM,
@@ -32,3 +24,11 @@ _to_orm: Callable[[User], UserORM] = get_mapper(
         ),
     ],
 )
+
+
+class SAUserRepository(IUserRepository, SAAbstractRepository[User, UserORM]):
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(session)
+
+    def _to_orm(self, entity: User) -> UserORM:
+        return _to_orm(entity)

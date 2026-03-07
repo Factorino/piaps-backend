@@ -11,16 +11,6 @@ from piaps.infrastructure.database.models.payroll_item import PayrollItemORM
 from piaps.infrastructure.database.repositories.base import SAAbstractRepository
 
 
-class SAPayrollItemRepository(
-    IPayrollItemRepository, SAAbstractRepository[PayrollItem, PayrollItemORM]
-):
-    def __init__(self, session: AsyncSession) -> None:
-        super().__init__(session)
-
-    def _to_orm(self, entity: PayrollItem) -> PayrollItemORM:
-        return _to_orm(entity)
-
-
 _to_orm: Callable[[PayrollItem], PayrollItemORM] = get_mapper(
     PayrollItem,
     PayrollItemORM,
@@ -29,3 +19,13 @@ _to_orm: Callable[[PayrollItem], PayrollItemORM] = get_mapper(
         link(P[PayrollItem].name, P[PayrollItemORM].name, coercer=lambda n: n.value),
     ],
 )
+
+
+class SAPayrollItemRepository(
+    IPayrollItemRepository, SAAbstractRepository[PayrollItem, PayrollItemORM]
+):
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(session)
+
+    def _to_orm(self, entity: PayrollItem) -> PayrollItemORM:
+        return _to_orm(entity)

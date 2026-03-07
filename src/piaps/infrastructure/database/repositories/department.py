@@ -11,16 +11,6 @@ from piaps.infrastructure.database.models.department import DepartmentORM
 from piaps.infrastructure.database.repositories.base import SAAbstractRepository
 
 
-class SADepartmentRepository(
-    IDepartmentRepository, SAAbstractRepository[Department, DepartmentORM]
-):
-    def __init__(self, session: AsyncSession) -> None:
-        super().__init__(session)
-
-    def _to_orm(self, entity: Department) -> DepartmentORM:
-        return _to_orm(entity)
-
-
 _to_orm: Callable[[Department], DepartmentORM] = get_mapper(
     Department,
     DepartmentORM,
@@ -29,3 +19,13 @@ _to_orm: Callable[[Department], DepartmentORM] = get_mapper(
         link(P[Department].name, P[DepartmentORM].name, coercer=lambda n: n.value),
     ],
 )
+
+
+class SADepartmentRepository(
+    IDepartmentRepository, SAAbstractRepository[Department, DepartmentORM]
+):
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(session)
+
+    def _to_orm(self, entity: Department) -> DepartmentORM:
+        return _to_orm(entity)
