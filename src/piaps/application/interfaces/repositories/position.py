@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Protocol
 
-from piaps.domain.entities.position import Position, PositionId
+from piaps.domain.entities.position import Position
 
 
 class IPositionRepository(Protocol):
@@ -12,4 +12,4 @@ class IPositionRepository(Protocol):
     async def update(self, entity: Position) -> None: ...
 
     @abstractmethod
-    async def delete(self, id: PositionId) -> None: ...
+    async def delete(self, entity: Position) -> None: ...

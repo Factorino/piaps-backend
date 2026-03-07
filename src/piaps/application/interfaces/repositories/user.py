@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Protocol
 
-from piaps.domain.entities.user import User, UserId
+from piaps.domain.entities.user import User
 
 
 class IUserRepository(Protocol):
@@ -12,4 +12,4 @@ class IUserRepository(Protocol):
     async def update(self, entity: User) -> None: ...
 
     @abstractmethod
-    async def delete(self, id: UserId) -> None: ...
+    async def delete(self, entity: User) -> None: ...

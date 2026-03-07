@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Protocol
 
-from piaps.domain.entities.employee import Employee, EmployeeId
+from piaps.domain.entities.employee import Employee
 
 
 class IEmployeeRepository(Protocol):
@@ -12,4 +12,4 @@ class IEmployeeRepository(Protocol):
     async def update(self, entity: Employee) -> None: ...
 
     @abstractmethod
-    async def delete(self, id: EmployeeId) -> None: ...
+    async def delete(self, entity: Employee) -> None: ...
