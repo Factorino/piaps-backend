@@ -6,6 +6,7 @@ from typing import ClassVar
 from sqlalchemy import Result, Select, select
 from sqlalchemy.orm import InstrumentedAttribute
 
+from piaps.application.common.query.between import DateBetween
 from piaps.application.common.query.filter import Filter
 from piaps.application.common.query.pagination import (
     DEFAULT_PAGINATION,
@@ -77,16 +78,15 @@ class SAPayrollSheetReader(IPayrollSheetReader, SAAbstractReader[PayrollSheet, P
     async def search_by_employee(
         self,
         employee_id: EmployeeId,
-        period: date | None = None,
+        period: DateBetween | None = None,
         status: PayrollStatus | None = None,
         sort: Sort[PayrollSheetSortField] | None = None,
         pagination: Pagination = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollSheet]:
-        base_query: Select = select(PayrollSheetORM).where(
+        base_query: Select[tuple[PayrollSheetORM]] = select(PayrollSheetORM).where(
             PayrollSheetORM.employee_id == employee_id
         )
-        if period is not None:
-            base_query = base_query.where(PayrollSheetORM.period == period)
+        base_query = self._apply_period(base_query, period)
         if status is not None:
             base_query = base_query.where(PayrollSheetORM.status == status)
         return await self._search(sort=sort, pagination=pagination, base_query=base_query)
@@ -94,21 +94,33 @@ class SAPayrollSheetReader(IPayrollSheetReader, SAAbstractReader[PayrollSheet, P
     async def search_by_department(
         self,
         department_id: DepartmentId,
-        period: date | None = None,
+        period: DateBetween | None = None,
         status: PayrollStatus | None = None,
         sort: Sort[PayrollSheetSortField] | None = None,
         pagination: Pagination = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollSheet]:
-        base_query: Select = (
+        base_query: Select[tuple[PayrollSheetORM]] = (
             select(PayrollSheetORM)
             .join(EmployeeORM, PayrollSheetORM.employee_id == EmployeeORM.id)
             .where(EmployeeORM.department_id == department_id)
         )
-        if period is not None:
-            base_query = base_query.where(PayrollSheetORM.period == period)
+        base_query = self._apply_period(base_query, period)
         if status is not None:
             base_query = base_query.where(PayrollSheetORM.status == status)
         return await self._search(sort=sort, pagination=pagination, base_query=base_query)
+
+    def _apply_period(
+        self,
+        query: Select[tuple[PayrollSheetORM]],
+        period: DateBetween | None,
+    ) -> Select[tuple[PayrollSheetORM]]:
+        if period is None:
+            return query
+        if period.value_from is not None:
+            query = query.where(PayrollSheetORM.period >= period.value_from)
+        if period.value_to is not None:
+            query = query.where(PayrollSheetORM.period <= period.value_to)
+        return query
 
     def _to_domain(self, orm_obj: PayrollSheetORM) -> PayrollSheet:
         raise NotImplementedError  # TODO: adaptix converter

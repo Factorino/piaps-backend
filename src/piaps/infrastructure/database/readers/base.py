@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from enum import StrEnum
 from types import MappingProxyType
-from typing import Any, ClassVar, Final
+from typing import ClassVar, Final
 
 from sqlalchemy import Result, Select, asc, desc, func, select
 from sqlalchemy.exc import SQLAlchemyError

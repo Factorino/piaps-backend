@@ -74,7 +74,9 @@ class SAEmployeeReader(IEmployeeReader, SAAbstractReader[Employee, EmployeeORM])
         sort: Sort[EmployeeSortField] | None = None,
         pagination: Pagination = DEFAULT_PAGINATION,
     ) -> PaginationResult[Employee]:
-        base_query: Select = select(EmployeeORM).where(EmployeeORM.department_id == department_id)
+        base_query: Select[tuple[EmployeeORM]] = select(EmployeeORM).where(
+            EmployeeORM.department_id == department_id
+        )
         return await self._search(sort=sort, pagination=pagination, base_query=base_query)
 
     async def search_by_position(
@@ -83,7 +85,9 @@ class SAEmployeeReader(IEmployeeReader, SAAbstractReader[Employee, EmployeeORM])
         sort: Sort[EmployeeSortField] | None = None,
         pagination: Pagination = DEFAULT_PAGINATION,
     ) -> PaginationResult[Employee]:
-        base_query: Select = select(EmployeeORM).where(EmployeeORM.position_id == position_id)
+        base_query: Select[tuple[EmployeeORM]] = select(EmployeeORM).where(
+            EmployeeORM.position_id == position_id
+        )
         return await self._search(sort=sort, pagination=pagination, base_query=base_query)
 
     def _to_domain(self, orm_obj: EmployeeORM) -> Employee:

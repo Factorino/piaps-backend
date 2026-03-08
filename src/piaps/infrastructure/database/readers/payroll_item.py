@@ -77,7 +77,7 @@ class SAPayrollItemReader(IPayrollItemReader, SAAbstractReader[PayrollItem, Payr
         sort: Sort[PayrollItemSortField] | None = None,
         pagination: Pagination = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollItem]:
-        base_query: Select = select(PayrollItemORM).where(
+        base_query: Select[tuple[PayrollItemORM]] = select(PayrollItemORM).where(
             PayrollItemORM.payroll_type == payroll_type
         )
         if calc_type is not None:

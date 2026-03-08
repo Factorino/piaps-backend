@@ -3,6 +3,7 @@ from datetime import date
 from enum import StrEnum
 from typing import Protocol
 
+from piaps.application.common.query.between import DateBetween
 from piaps.application.common.query.filter import Filter
 from piaps.application.common.query.pagination import (
     DEFAULT_PAGINATION,
@@ -50,7 +51,7 @@ class IPayrollSheetReader(Protocol):
     async def search_by_employee(
         self,
         employee_id: EmployeeId,
-        period: date | None = None,
+        period: DateBetween | None = None,
         status: PayrollStatus | None = None,
         sort: Sort[PayrollSheetSortField] | None = None,
         pagination: Pagination = DEFAULT_PAGINATION,
@@ -60,7 +61,7 @@ class IPayrollSheetReader(Protocol):
     async def search_by_department(
         self,
         department_id: DepartmentId,
-        period: date | None = None,
+        period: DateBetween | None = None,
         status: PayrollStatus | None = None,
         sort: Sort[PayrollSheetSortField] | None = None,
         pagination: Pagination = DEFAULT_PAGINATION,
