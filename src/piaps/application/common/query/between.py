@@ -1,6 +1,6 @@
 import calendar
 from datetime import date
-from typing import Any, Protocol, runtime_checkable
+from typing import Any, Protocol, Self, runtime_checkable
 
 from piaps.application.common.dto.base import dto
 from piaps.domain.errors.base import ValidationError
@@ -25,19 +25,19 @@ class Between[T: _SupportsOrdering]:
 
 class DateBetween(Between[date]):
     @classmethod
-    def since(cls, period: date) -> "DateBetween":
+    def since(cls, period: date) -> Self:
         return cls(value_from=period)
 
     @classmethod
-    def until(cls, period: date) -> "DateBetween":
+    def until(cls, period: date) -> Self:
         return cls(value_to=period)
 
     @classmethod
-    def exact(cls, period: date) -> "DateBetween":
+    def exact(cls, period: date) -> Self:
         return cls(value_from=period, value_to=period)
 
     @classmethod
-    def for_month(cls, year: int, month: int) -> "DateBetween":
+    def for_month(cls, year: int, month: int) -> Self:
         last_day: int = calendar.monthrange(year, month)[1]
         return cls(
             value_from=date(year, month, 1),

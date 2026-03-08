@@ -11,6 +11,7 @@ from piaps.application.common.query.pagination import (
 from piaps.application.common.query.sort import Sort
 from piaps.domain.entities.employee import EmployeeId
 from piaps.domain.entities.user import User, UserId
+from piaps.domain.value_objects.username import Username
 
 
 class UserFilterField(StrEnum):
@@ -26,6 +27,10 @@ class UserSortField(StrEnum):
 class IUserReader(Protocol):
     @abstractmethod
     async def find_by_id(self, id: UserId) -> User | None: ...
+
+    @abstractmethod
+    async def find_by_username(self, username: Username) -> User | None: ...
+
 
     @abstractmethod
     async def find_by_employee_id(self, employee_id: EmployeeId) -> User | None: ...

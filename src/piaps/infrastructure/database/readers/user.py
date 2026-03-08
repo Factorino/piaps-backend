@@ -19,6 +19,7 @@ from piaps.application.interfaces.readers.user import (
 )
 from piaps.domain.entities.employee import EmployeeId
 from piaps.domain.entities.user import User, UserId
+from piaps.domain.value_objects.username import Username
 from piaps.infrastructure.database.models.user import UserORM
 from piaps.infrastructure.database.readers.base import SAAbstractReader
 
@@ -42,6 +43,12 @@ class SAUserReader(IUserReader, SAAbstractReader[User, UserORM]):
 
     async def find_by_id(self, id: UserId) -> User | None:
         query: Select[tuple[UserORM]] = select(UserORM).where(UserORM.id == id)
+        result: Result[tuple[UserORM]] = await self._execute(query)
+        row: UserORM | None = result.scalar_one_or_none()
+        return self._to_domain(row) if row else None
+
+    async def find_by_username(self, username: Username) -> User | None:
+        query: Select[tuple[UserORM]] = select(UserORM).where(UserORM.username == username.value)
         result: Result[tuple[UserORM]] = await self._execute(query)
         row: UserORM | None = result.scalar_one_or_none()
         return self._to_domain(row) if row else None

@@ -20,10 +20,8 @@ class CodeGenerator:
         }
     )
 
-    def generate(self, entity: Entity) -> Code:
-        entity_type = type(entity)
+    def generate(self, entity_type: type[Entity]) -> Code:
         prefix: str | None = self._PREFIXES.get(entity_type)
-
         if prefix is None:
             raise ValueError(f"No code prefix registered for entity type '{entity_type.__name__}'")
 

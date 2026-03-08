@@ -1,52 +1,67 @@
-from uuid import UUID
+from typing import TYPE_CHECKING
 
-from piaps.application.common.dto import base
-from piaps.application.errors.base import NotFoundError
-from piaps.application.interfaces.interactor import IInteractor
+from piaps.application.common.dto.base import dto
+from piaps.application.common.dto.department import DepartmentDTO
+from piaps.application.common.not_set import NOTSET, NotSet, is_set
+from piaps.application.errors.auth import AccessDeniedError
+from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
+from piaps.application.interfaces.common.interactor import Interactor
+from piaps.application.interfaces.common.transaction_manager import ITransactionManager
 from piaps.application.interfaces.readers.department import IDepartmentReader
 from piaps.application.interfaces.repositories.department import IDepartmentRepository
-from piaps.application.interfaces.transaction_manager import TransactionManager
-from piaps.domain.entities.department import Department
+from piaps.domain.entities.department import Department, DepartmentId
+from piaps.domain.enums.user_role import UserRole
+from piaps.domain.errors.base import NotFoundError
+from piaps.domain.value_objects.name import Name
 
 
-@base
+if TYPE_CHECKING:
+    from piaps.domain.entities.user import User
+
+
+@dto
 class UpdateDepartmentRequest:
-    id: UUID
-    name: str | None = None
-    description: str | None = None
+    id: DepartmentId
+    name: str | NotSet = NOTSET
+    description: str | None | NotSet = NOTSET
 
 
-@base
+@dto
 class UpdateDepartmentResponse:
-    department: Department
+    department: DepartmentDTO
 
 
-class UpdateDepartment(IInteractor[UpdateDepartmentRequest, UpdateDepartmentResponse]):
+class UpdateDepartment(Interactor[UpdateDepartmentRequest, UpdateDepartmentResponse]):
     def __init__(
         self,
         department_repository: IDepartmentRepository,
         department_reader: IDepartmentReader,
-        uow: TransactionManager,
+        transaction_manager: ITransactionManager,
+        identity_provider: IIdentityProvider,
     ) -> None:
-        self._repository: IDepartmentRepository = department_repository
-        self._reader: IDepartmentReader = department_reader
-        self._uow: TransactionManager = uow
+        self._department_repository: IDepartmentRepository = department_repository
+        self._department_reader: IDepartmentReader = department_reader
+        self._uow: ITransactionManager = transaction_manager
+        self._idp: IIdentityProvider = identity_provider
 
     async def execute(self, request: UpdateDepartmentRequest) -> UpdateDepartmentResponse:
-        existing: Department | None = await self._reader.find_by_id(request.id)
-        if existing is None:
-            raise NotFoundError
+        await self._check_access()
 
-        updated = Department(
-            id=existing.id,
-            code=existing.code,
-            name=request.name if request.name is not None else existing.name,
-            description=request.description
-            if request.description is not None
-            else existing.description,
-        )
+        department: Department | None = await self._department_reader.find_by_id(request.id)
+        if department is None:
+            raise NotFoundError(f"Department with id '{request.id}' not found")
 
-        saved: Department = await self._repository.update(updated)
+        if is_set(request.name):
+            department.name = Name(value=request.name)
+        if is_set(request.description):
+            department.description = request.description
+
+        await self._department_repository.update(department)
         await self._uow.commit()
 
-        return UpdateDepartmentResponse(department=saved)
+        return UpdateDepartmentResponse(department=DepartmentDTO.from_domain(department))
+
+    async def _check_access(self) -> None:
+        user: User = await self._idp.get_user()
+        if user.role < UserRole.ADMINISTRATOR:
+            raise AccessDeniedError("Only administrators can update departments")
