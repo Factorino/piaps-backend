@@ -27,6 +27,6 @@ class PayrollItem(Entity[PayrollItemId]):
     def _validate(self) -> None:
         if self.calc_type == PayrollCalculationType.PERCENT and self.value is None:
             raise ValidationError(
-            f"PayrollItem '{self.name.value}' with calc_type '{self.calc_type}'"
-            " must have a value set for percent calculation"
-        )
+                f"PayrollItem '{self.name.value}' with calc_type '{self.calc_type}'"
+                " must have a value set for percent calculation"
+            )

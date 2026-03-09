@@ -1,62 +1,62 @@
-from uuid import uuid4
-
 from piaps.application.common.dto.base import dto
 from piaps.application.common.dto.user import UserDTO
-from piaps.application.interfaces.auth.password_hasher import IPasswordHasher
+from piaps.application.errors.auth import AccessDeniedError
+from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
 from piaps.application.interfaces.common.transaction_manager import ITransactionManager
 from piaps.application.interfaces.readers.user import IUserReader
 from piaps.application.interfaces.repositories.user import IUserRepository
 from piaps.domain.entities.user import User, UserId
-from piaps.domain.errors.base import AlreadyExistsError
-from piaps.domain.value_objects.password import Password
+from piaps.domain.enums.user_role import UserRole
+from piaps.domain.errors.base import AlreadyExistsError, NotFoundError
 from piaps.domain.value_objects.username import Username
 
 
 @dto
-class RegisterUserRequest:
+class ChangeUsernameRequest:
+    id: UserId
     username: str
-    password: str
 
 
 @dto
-class RegisterUserResponse:
+class ChangeUsernameResponse:
     user: UserDTO
 
 
-class RegisterUser(Interactor[RegisterUserRequest, RegisterUserResponse]):
+class ChangeUsername(Interactor[ChangeUsernameRequest, ChangeUsernameResponse]):
     def __init__(
         self,
         user_repository: IUserRepository,
         user_reader: IUserReader,
-        password_hasher: IPasswordHasher,
         transaction_manager: ITransactionManager,
+        identity_provider: IIdentityProvider,
     ) -> None:
         self._user_repository: IUserRepository = user_repository
         self._user_reader: IUserReader = user_reader
-        self._password_hasher: IPasswordHasher = password_hasher
         self._uow: ITransactionManager = transaction_manager
+        self._idp: IIdentityProvider = identity_provider
 
-    async def execute(self, request: RegisterUserRequest) -> RegisterUserResponse:
-        id_: UserId = UserId(uuid4())
-        username = Username(value=request.username)
-        password = Password(value=request.password)
+    async def execute(self, request: ChangeUsernameRequest) -> ChangeUsernameResponse:
+        current_user: User = await self._idp.get_user()
+        self._check_access(current_user, request.id)
 
-        password_hash: bytes = self._password_hasher.hash_password(password)
+        user: User | None = await self._user_reader.find_by_id(request.id)
+        if user is None:
+            raise NotFoundError(f"User with id '{request.id}' not found")
 
-        user = User(
-            id=id_,
-            username=username,
-            password_hash=password_hash,
-        )
+        user.username = Username(value=request.username)
 
         await self._check_unique(user)
         await self._user_repository.add(user)
         await self._uow.commit()
 
-        return RegisterUserResponse(user=UserDTO.from_domain(user))
+        return ChangeUsernameResponse(user=UserDTO.from_domain(user))
 
     async def _check_unique(self, user: User) -> None:
         existing: User | None = await self._user_reader.find_by_username(user.username)
         if existing is not None and existing.id != user.id:
             raise AlreadyExistsError(f"User with username '{user.username.value}' already exists")
+
+    def _check_access(self, current_user: User, target_user_id: UserId) -> None:
+        if current_user.role < UserRole.ADMINISTRATOR and current_user.id != target_user_id:
+            raise AccessDeniedError("You don't have permission to change another user's username")

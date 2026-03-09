@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from piaps.application.common.dto.base import dto
 from piaps.application.common.dto.department import DepartmentDTO
 from piaps.application.common.not_set import NOTSET, NotSet, is_set
@@ -10,13 +8,10 @@ from piaps.application.interfaces.common.transaction_manager import ITransaction
 from piaps.application.interfaces.readers.department import IDepartmentReader
 from piaps.application.interfaces.repositories.department import IDepartmentRepository
 from piaps.domain.entities.department import Department, DepartmentId
+from piaps.domain.entities.user import User
 from piaps.domain.enums.user_role import UserRole
 from piaps.domain.errors.base import AlreadyExistsError, NotFoundError
 from piaps.domain.value_objects.name import Name
-
-
-if TYPE_CHECKING:
-    from piaps.domain.entities.user import User
 
 
 @dto
@@ -45,7 +40,8 @@ class UpdateDepartment(Interactor[UpdateDepartmentRequest, UpdateDepartmentRespo
         self._idp: IIdentityProvider = identity_provider
 
     async def execute(self, request: UpdateDepartmentRequest) -> UpdateDepartmentResponse:
-        await self._check_access()
+        current_user: User = await self._idp.get_user()
+        self._check_access(current_user)
 
         department: Department | None = await self._department_reader.find_by_id(request.id)
         if department is None:
@@ -64,12 +60,11 @@ class UpdateDepartment(Interactor[UpdateDepartmentRequest, UpdateDepartmentRespo
 
     async def _check_unique(self, department: Department) -> None:
         existing: Department | None = await self._department_reader.find_by_name(department.name)
-        if existing is not None and department.id != existing.id:
+        if existing is not None and existing.id != department.id:
             raise AlreadyExistsError(
                 f"Department with name '{department.name.value}' already exists"
             )
 
-    async def _check_access(self) -> None:
-        user: User = await self._idp.get_user()
-        if user.role < UserRole.ADMINISTRATOR:
-            raise AccessDeniedError("Only administrators can update departments")
+    def _check_access(self, current_user: User) -> None:
+        if current_user.role < UserRole.ADMINISTRATOR:
+            raise AccessDeniedError("You don't have permission to update departments")

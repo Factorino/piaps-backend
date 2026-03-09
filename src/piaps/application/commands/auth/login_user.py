@@ -52,11 +52,7 @@ class LoginUser(Interactor[LoginUserRequest, LoginUserResponse]):
         if user is None:
             raise exception
 
-        is_valid: bool = self._password_hasher.verify_password(
-            request.password,
-            user.password_hash,
-        )
-        if not is_valid:
+        if not self._password_hasher.verify_password(request.password, user.password_hash):
             raise exception
 
         payload = TokenPayload(sub=user.id, role=user.role)

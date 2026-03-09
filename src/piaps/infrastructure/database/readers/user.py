@@ -46,7 +46,7 @@ class SAUserReader(IUserReader, SAAbstractReader[User, UserORM]):
     async def find_by_username(self, username: Username) -> User | None:
         return await self._find(UserORM.username == username.value)
 
-    async def find_by_employee_id(self, employee_id: EmployeeId) -> User | None:
+    async def find_by_employee(self, employee_id: EmployeeId) -> User | None:
         return await self._find(UserORM.employee_id == employee_id)
 
     async def search(

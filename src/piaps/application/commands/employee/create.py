@@ -1,5 +1,5 @@
 from datetime import date
-from typing import TYPE_CHECKING, Final
+from typing import Final
 from uuid import uuid4
 
 from piaps.application.common.dto.base import dto
@@ -14,14 +14,11 @@ from piaps.application.interfaces.repositories.employee import IEmployeeReposito
 from piaps.domain.entities.department import DepartmentId
 from piaps.domain.entities.employee import Employee, EmployeeId
 from piaps.domain.entities.position import PositionId
+from piaps.domain.entities.user import User
 from piaps.domain.enums.user_role import UserRole
 from piaps.domain.services.code_generator import CodeGenerator
 from piaps.domain.value_objects.code import Code
 from piaps.domain.value_objects.full_name import FullName
-
-
-if TYPE_CHECKING:
-    from piaps.domain.entities.user import User
 
 
 @dto
@@ -57,7 +54,8 @@ class CreateEmployee(Interactor[CreateEmployeeRequest, CreateEmployeeResponse]):
         self._idp: IIdentityProvider = identity_provider
 
     async def execute(self, request: CreateEmployeeRequest) -> CreateEmployeeResponse:
-        await self._check_access()
+        current_user: User = await self._idp.get_user()
+        self._check_access(current_user)
 
         id_: EmployeeId = EmployeeId(uuid4())
         code: Code = await self._generate_unique_code()
@@ -97,7 +95,6 @@ class CreateEmployee(Interactor[CreateEmployeeRequest, CreateEmployeeResponse]):
             f"after {self._MAX_CODE_GEN_ATTEMPTS} attempts"
         )
 
-    async def _check_access(self) -> None:
-        user: User = await self._idp.get_user()
-        if user.role < UserRole.ADMINISTRATOR:
-            raise AccessDeniedError("Only administrators can create employees")
+    def _check_access(self, current_user: User) -> None:
+        if current_user.role < UserRole.ADMINISTRATOR:
+            raise AccessDeniedError("You don't have permission to create employees")

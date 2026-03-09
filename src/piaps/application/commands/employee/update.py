@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from piaps.application.common.dto.base import dto
 from piaps.application.common.dto.employee import EmployeeDTO
 from piaps.application.common.not_set import NOTSET, NotSet, is_set
@@ -12,13 +10,10 @@ from piaps.application.interfaces.repositories.employee import IEmployeeReposito
 from piaps.domain.entities.department import DepartmentId
 from piaps.domain.entities.employee import Employee, EmployeeId
 from piaps.domain.entities.position import PositionId
+from piaps.domain.entities.user import User
 from piaps.domain.enums.user_role import UserRole
 from piaps.domain.errors.base import NotFoundError
 from piaps.domain.value_objects.full_name import FullName
-
-
-if TYPE_CHECKING:
-    from piaps.domain.entities.user import User
 
 
 @dto
@@ -50,7 +45,8 @@ class UpdateEmployee(Interactor[UpdateEmployeeRequest, UpdateEmployeeResponse]):
         self._idp: IIdentityProvider = identity_provider
 
     async def execute(self, request: UpdateEmployeeRequest) -> UpdateEmployeeResponse:
-        await self._check_access()
+        current_user: User = await self._idp.get_user()
+        self._check_access(current_user)
 
         employee: Employee | None = await self._employee_reader.find_by_id(request.id)
         if employee is None:
@@ -82,7 +78,6 @@ class UpdateEmployee(Interactor[UpdateEmployeeRequest, UpdateEmployeeResponse]):
 
         return FullName(last_name=last_name, first_name=first_name, middle_name=middle_name)
 
-    async def _check_access(self) -> None:
-        user: User = await self._idp.get_user()
-        if user.role < UserRole.ADMINISTRATOR:
-            raise AccessDeniedError("Only administrators can update employees")
+    def _check_access(self, current_user: User) -> None:
+        if current_user.role < UserRole.ADMINISTRATOR:
+            raise AccessDeniedError("You don't have permission to update employees")

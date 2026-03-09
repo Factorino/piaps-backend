@@ -18,14 +18,14 @@ class Name(ValueObject):
     def _validate(self) -> None:
         stripped: str = self.value.strip()
         if not stripped:
-            raise ValidationError("Invalid name format: name must not be empty")
+            raise ValidationError("Invalid name: name must not be empty")
 
         if len(stripped) > self._MAX_LENGTH:
             raise ValidationError(
-                f"Invalid name format: name must not exceed {self._MAX_LENGTH} characters"
+                f"Invalid name: name must not exceed {self._MAX_LENGTH} characters"
             )
 
         if not self._NAME_FMT.match(stripped):
-            raise ValidationError("Invalid name format: name contains invalid characters")
+            raise ValidationError("Invalid name: name contains invalid characters")
 
         object.__setattr__(self, "value", stripped)

@@ -8,13 +8,13 @@ from piaps.application.interfaces.common.transaction_manager import ITransaction
 from piaps.application.interfaces.readers.payroll_item import IPayrollItemReader
 from piaps.application.interfaces.repositories.payroll_item import IPayrollItemRepository
 from piaps.domain.entities.payroll_item import PayrollItemId
+from piaps.domain.entities.user import User
 from piaps.domain.enums.user_role import UserRole
 from piaps.domain.errors.base import NotFoundError
 
 
 if TYPE_CHECKING:
     from piaps.domain.entities.payroll_item import PayrollItem
-    from piaps.domain.entities.user import User
 
 
 @dto
@@ -36,7 +36,8 @@ class DeletePayrollItem(Interactor[DeletePayrollItemRequest, None]):
         self._idp: IIdentityProvider = identity_provider
 
     async def execute(self, request: DeletePayrollItemRequest) -> None:
-        await self._check_access()
+        current_user: User = await self._idp.get_user()
+        self._check_access(current_user)
 
         payroll_item: PayrollItem | None = await self._payroll_item_reader.find_by_id(request.id)
         if payroll_item is None:
@@ -45,7 +46,6 @@ class DeletePayrollItem(Interactor[DeletePayrollItemRequest, None]):
         await self._payroll_item_repository.delete(payroll_item)
         await self._uow.commit()
 
-    async def _check_access(self) -> None:
-        user: User = await self._idp.get_user()
-        if user.role < UserRole.ADMINISTRATOR:
-            raise AccessDeniedError("Only accountants and administrators can delete payroll items")
+    def _check_access(self, current_user: User) -> None:
+        if current_user.role < UserRole.ACCOUNTANT:
+            raise AccessDeniedError("You don't have permission to delete payroll items")

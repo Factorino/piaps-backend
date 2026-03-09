@@ -19,19 +19,19 @@ class Username(ValueObject):
     def _validate(self) -> None:
         stripped: str = self.value.strip()
         if not stripped:
-            raise ValidationError("Invalid username format: username must not be empty")
+            raise ValidationError("Invalid username: username must not be empty")
 
         if len(stripped) < self._MIN_LENGTH:
             raise ValidationError(
-                f"Invalid username format: username must be at least {self._MIN_LENGTH} characters"
+                f"Invalid username: username must be at least {self._MIN_LENGTH} characters"
             )
 
         if len(stripped) > self._MAX_LENGTH:
             raise ValidationError(
-                f"Invalid username format: username must not exceed {self._MAX_LENGTH} characters"
+                f"Invalid username: username must not exceed {self._MAX_LENGTH} characters"
             )
 
         if not self._USERNAME_FMT.match(stripped):
-            raise ValidationError("Invalid username format: username contains invalid characters")
+            raise ValidationError("Invalid username: username contains invalid characters")
 
         object.__setattr__(self, "value", stripped)

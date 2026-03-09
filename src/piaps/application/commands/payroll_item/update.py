@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import TYPE_CHECKING
 
 from piaps.application.common.dto.base import dto
 from piaps.application.common.dto.payroll_item import PayrollItemDTO
@@ -11,15 +10,12 @@ from piaps.application.interfaces.common.transaction_manager import ITransaction
 from piaps.application.interfaces.readers.payroll_item import IPayrollItemReader
 from piaps.application.interfaces.repositories.payroll_item import IPayrollItemRepository
 from piaps.domain.entities.payroll_item import PayrollItem, PayrollItemId
+from piaps.domain.entities.user import User
 from piaps.domain.enums.payroll_calculation_type import PayrollCalculationType
 from piaps.domain.enums.payroll_item_type import PayrollItemType
 from piaps.domain.enums.user_role import UserRole
 from piaps.domain.errors.base import AlreadyExistsError, NotFoundError
 from piaps.domain.value_objects.name import Name
-
-
-if TYPE_CHECKING:
-    from piaps.domain.entities.user import User
 
 
 @dto
@@ -50,7 +46,8 @@ class UpdatePayrollItem(Interactor[UpdatePayrollItemRequest, UpdatePayrollItemRe
         self._idp: IIdentityProvider = identity_provider
 
     async def execute(self, request: UpdatePayrollItemRequest) -> UpdatePayrollItemResponse:
-        await self._check_access()
+        current_user: User = await self._idp.get_user()
+        self._check_access(current_user)
 
         payroll_item: PayrollItem | None = await self._payroll_item_reader.find_by_id(request.id)
         if payroll_item is None:
@@ -75,12 +72,11 @@ class UpdatePayrollItem(Interactor[UpdatePayrollItemRequest, UpdatePayrollItemRe
         existing: PayrollItem | None = await self._payroll_item_reader.find_by_name(
             payroll_item.name
         )
-        if existing is not None and payroll_item.id != existing.id:
+        if existing is not None and existing.id != payroll_item.id:
             raise AlreadyExistsError(
                 f"Payroll item with name '{payroll_item.name.value}' already exists"
             )
 
-    async def _check_access(self) -> None:
-        user: User = await self._idp.get_user()
-        if user.role < UserRole.ADMINISTRATOR:
-            raise AccessDeniedError("Only accountants and administrators can delete payroll items")
+    def _check_access(self, current_user: User) -> None:
+        if current_user.role < UserRole.ACCOUNTANT:
+            raise AccessDeniedError("You don't have permission to delete payroll items")

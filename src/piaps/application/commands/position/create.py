@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import TYPE_CHECKING, Final
+from typing import Final
 from uuid import uuid4
 
 from piaps.application.common.dto.base import dto
@@ -12,16 +12,13 @@ from piaps.application.interfaces.common.transaction_manager import ITransaction
 from piaps.application.interfaces.readers.position import IPositionReader
 from piaps.application.interfaces.repositories.position import IPositionRepository
 from piaps.domain.entities.position import Position, PositionId
+from piaps.domain.entities.user import User
 from piaps.domain.enums.user_role import UserRole
 from piaps.domain.errors.base import AlreadyExistsError
 from piaps.domain.services.code_generator import CodeGenerator
 from piaps.domain.value_objects.code import Code
 from piaps.domain.value_objects.money import Money
 from piaps.domain.value_objects.name import Name
-
-
-if TYPE_CHECKING:
-    from piaps.domain.entities.user import User
 
 
 @dto
@@ -54,7 +51,8 @@ class CreatePosition(Interactor[CreatePositionRequest, CreatePositionResponse]):
         self._idp: IIdentityProvider = identity_provider
 
     async def execute(self, request: CreatePositionRequest) -> CreatePositionResponse:
-        await self._check_access()
+        current_user: User = await self._idp.get_user()
+        self._check_access(current_user)
 
         id_: PositionId = PositionId(uuid4())
         code: Code = await self._generate_unique_code()
@@ -91,10 +89,9 @@ class CreatePosition(Interactor[CreatePositionRequest, CreatePositionResponse]):
 
     async def _check_unique(self, position: Position) -> None:
         existing: Position | None = await self._position_reader.find_by_name(position.name)
-        if existing is not None and position.id != existing.id:
+        if existing is not None and existing.id != position.id:
             raise AlreadyExistsError(f"Position with name '{position.name.value}' already exists")
 
-    async def _check_access(self) -> None:
-        user: User = await self._idp.get_user()
-        if user.role < UserRole.ADMINISTRATOR:
-            raise AccessDeniedError("Only administrators can create positions")
+    def _check_access(self, current_user: User) -> None:
+        if current_user.role < UserRole.ADMINISTRATOR:
+            raise AccessDeniedError("You don't have permission to create positions")

@@ -1,5 +1,5 @@
 import re
-from typing import ClassVar
+from typing import ClassVar, Self
 
 from piaps.domain.errors.base import ValidationError
 from piaps.domain.value_objects.base import ValueObject, value_object
@@ -15,15 +15,27 @@ class FullName(ValueObject):
     middle_name: str | None = None
 
     def __post_init__(self) -> None:
-        self._validate_part("last_name", self.last_name)
-        self._validate_part("first_name", self.first_name)
+        self._validate_part("LastName", self.last_name)
+        self._validate_part("FirstName", self.first_name)
         if self.middle_name is not None:
-            self._validate_part("middle_name", self.middle_name)
+            self._validate_part("MiddleName", self.middle_name)
 
         object.__setattr__(self, "last_name", self.last_name.strip().title())
         object.__setattr__(self, "first_name", self.first_name.strip().title())
         if self.middle_name is not None:
             object.__setattr__(self, "middle_name", self.middle_name.strip().title())
+
+    @classmethod
+    def from_str(cls, full_name: str) -> Self:
+        parts: list[str] = full_name.strip().split()
+        if len(parts) < 2 or len(parts) > 3:
+            raise ValidationError(
+                "Invalid full name format: expected 'LastName FirstName [MiddleName]'"
+            )
+
+        last_name, first_name, *rest = parts
+        middle_name: str | None = rest[0] if rest else None
+        return cls(last_name=last_name, first_name=first_name, middle_name=middle_name)
 
     @property
     def full(self) -> str:

@@ -26,13 +26,13 @@ class PayrollService:
             return amount
         if payroll_item.value is None:
             raise PayrollValueNotSetError(
-                f"PayrollItem '{payroll_item.code}' has no fixed value set"
+                f"PayrollItem '{payroll_item.code.value}' has no fixed value set"
             )
         return Money(value=payroll_item.value)
 
     def _percent(self, payroll_item: PayrollItem, base_salary: Money) -> Money:
         if payroll_item.value is None:
             raise PayrollValueNotSetError(
-                f"PayrollItem '{payroll_item.code}' has no percent rate set"
+                f"PayrollItem '{payroll_item.code.value}' has no percent rate set"
             )
         return base_salary * payroll_item.value
