@@ -11,7 +11,7 @@ from piaps.application.interfaces.readers.department import IDepartmentReader
 from piaps.application.interfaces.repositories.department import IDepartmentRepository
 from piaps.domain.entities.department import Department, DepartmentId
 from piaps.domain.enums.user_role import UserRole
-from piaps.domain.errors.base import NotFoundError
+from piaps.domain.errors.base import AlreadyExistsError, NotFoundError
 from piaps.domain.value_objects.name import Name
 
 
@@ -56,10 +56,18 @@ class UpdateDepartment(Interactor[UpdateDepartmentRequest, UpdateDepartmentRespo
         if is_set(request.description):
             department.description = request.description
 
+        await self._check_unique(department)
         await self._department_repository.update(department)
         await self._uow.commit()
 
         return UpdateDepartmentResponse(department=DepartmentDTO.from_domain(department))
+
+    async def _check_unique(self, department: Department) -> None:
+        existing: Department | None = await self._department_reader.find_by_name(department.name)
+        if existing is not None and department.id != existing.id:
+            raise AlreadyExistsError(
+                f"Department with name '{department.name.value}' already exists"
+            )
 
     async def _check_access(self) -> None:
         user: User = await self._idp.get_user()

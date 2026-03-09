@@ -2,7 +2,6 @@ from enum import StrEnum
 from types import MappingProxyType
 from typing import ClassVar
 
-from sqlalchemy import Result, Select, select
 from sqlalchemy.orm import InstrumentedAttribute
 
 from piaps.application.common.query.filter import Filter
@@ -42,22 +41,13 @@ class SAUserReader(IUserReader, SAAbstractReader[User, UserORM]):
     )
 
     async def find_by_id(self, id: UserId) -> User | None:
-        query: Select[tuple[UserORM]] = select(UserORM).where(UserORM.id == id)
-        result: Result[tuple[UserORM]] = await self._execute(query)
-        row: UserORM | None = result.scalar_one_or_none()
-        return self._to_domain(row) if row else None
+        return await self._find(UserORM.id == id)
 
     async def find_by_username(self, username: Username) -> User | None:
-        query: Select[tuple[UserORM]] = select(UserORM).where(UserORM.username == username.value)
-        result: Result[tuple[UserORM]] = await self._execute(query)
-        row: UserORM | None = result.scalar_one_or_none()
-        return self._to_domain(row) if row else None
+        return await self._find(UserORM.username == username.value)
 
     async def find_by_employee_id(self, employee_id: EmployeeId) -> User | None:
-        query: Select[tuple[UserORM]] = select(UserORM).where(UserORM.employee_id == employee_id)
-        result: Result[tuple[UserORM]] = await self._execute(query)
-        row: UserORM | None = result.scalar_one_or_none()
-        return self._to_domain(row) if row else None
+        return await self._find(UserORM.employee_id == employee_id)
 
     async def search(
         self,

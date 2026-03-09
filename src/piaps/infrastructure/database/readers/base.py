@@ -4,7 +4,7 @@ from enum import StrEnum
 from types import MappingProxyType
 from typing import ClassVar, Final
 
-from sqlalchemy import Result, Select, asc, desc, func, select
+from sqlalchemy import ColumnElement, Result, Select, asc, desc, func, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
@@ -74,6 +74,26 @@ class SAAbstractReader[EntityT: Entity, ORMT: BaseORM](ABC):
             return await self._session.execute(query)
         except SQLAlchemyError as e:
             raise OperationFailedError from e
+
+    async def _find(
+        self,
+        *whereclause: ColumnElement[bool],
+        base_query: Select[tuple[ORMT]] | None = None,
+    ) -> EntityT | None:
+        query: Select | None = base_query
+        if query is None:
+            query = select(self._model)
+
+        if whereclause:
+            query = query.where(*whereclause)
+
+        result: Result[tuple[ORMT]] = await self._execute(query)
+        orm_obj: ORMT | None = result.scalars().first()
+
+        if orm_obj is None:
+            return None
+
+        return self._to_domain(orm_obj)
 
     async def _search(
         self,

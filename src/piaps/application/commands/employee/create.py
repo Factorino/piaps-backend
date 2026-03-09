@@ -1,0 +1,103 @@
+from datetime import date
+from typing import TYPE_CHECKING, Final
+from uuid import uuid4
+
+from piaps.application.common.dto.base import dto
+from piaps.application.common.dto.employee import EmployeeDTO
+from piaps.application.errors.auth import AccessDeniedError
+from piaps.application.errors.base import OperationFailedError
+from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
+from piaps.application.interfaces.common.interactor import Interactor
+from piaps.application.interfaces.common.transaction_manager import ITransactionManager
+from piaps.application.interfaces.readers.employee import IEmployeeReader
+from piaps.application.interfaces.repositories.employee import IEmployeeRepository
+from piaps.domain.entities.department import DepartmentId
+from piaps.domain.entities.employee import Employee, EmployeeId
+from piaps.domain.entities.position import PositionId
+from piaps.domain.enums.user_role import UserRole
+from piaps.domain.services.code_generator import CodeGenerator
+from piaps.domain.value_objects.code import Code
+from piaps.domain.value_objects.full_name import FullName
+
+
+if TYPE_CHECKING:
+    from piaps.domain.entities.user import User
+
+
+@dto
+class CreateEmployeeRequest:
+    last_name: str
+    first_name: str
+    middle_name: str | None = None
+    hire_date: date
+    department_id: DepartmentId
+    position_id: PositionId
+
+
+@dto
+class CreateEmployeeResponse:
+    employee: EmployeeDTO
+
+
+class CreateEmployee(Interactor[CreateEmployeeRequest, CreateEmployeeResponse]):
+    _MAX_CODE_GEN_ATTEMPTS: Final[int] = 5
+
+    def __init__(
+        self,
+        employee_repository: IEmployeeRepository,
+        employee_reader: IEmployeeReader,
+        code_generator: CodeGenerator,
+        transaction_manager: ITransactionManager,
+        identity_provider: IIdentityProvider,
+    ) -> None:
+        self._employee_repository: IEmployeeRepository = employee_repository
+        self._employee_reader: IEmployeeReader = employee_reader
+        self._code_generator: CodeGenerator = code_generator
+        self._uow: ITransactionManager = transaction_manager
+        self._idp: IIdentityProvider = identity_provider
+
+    async def execute(self, request: CreateEmployeeRequest) -> CreateEmployeeResponse:
+        await self._check_access()
+
+        id_: EmployeeId = EmployeeId(uuid4())
+        code: Code = await self._generate_unique_code()
+        full_name = FullName(
+            last_name=request.last_name,
+            first_name=request.first_name,
+            middle_name=request.middle_name,
+        )
+        hire_date: date = request.hire_date
+        department_id: DepartmentId = request.department_id
+        position_id: PositionId = request.position_id
+
+        employee = Employee(
+            id=id_,
+            code=code,
+            full_name=full_name,
+            hire_date=hire_date,
+            department_id=department_id,
+            position_id=position_id,
+        )
+
+        await self._employee_repository.add(employee)
+        await self._uow.commit()
+
+        return CreateEmployeeResponse(employee=EmployeeDTO.from_domain(employee))
+
+    async def _generate_unique_code(self) -> Code:
+        for _ in range(self._MAX_CODE_GEN_ATTEMPTS):
+            code: Code = self._code_generator.generate(Employee)
+
+            existing: Employee | None = await self._employee_reader.find_by_code(code)
+            if existing is None:
+                return code
+
+        raise OperationFailedError(
+            f"Failed to generate unique code for employee "
+            f"after {self._MAX_CODE_GEN_ATTEMPTS} attempts"
+        )
+
+    async def _check_access(self) -> None:
+        user: User = await self._idp.get_user()
+        if user.role < UserRole.ADMINISTRATOR:
+            raise AccessDeniedError("Only administrators can create employees")

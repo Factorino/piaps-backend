@@ -2,7 +2,7 @@ from enum import StrEnum
 from types import MappingProxyType
 from typing import ClassVar
 
-from sqlalchemy import Result, Select, select
+from sqlalchemy import Select, select
 from sqlalchemy.orm import InstrumentedAttribute
 
 from piaps.application.common.query.filter import Filter
@@ -21,6 +21,7 @@ from piaps.domain.entities.payroll_item import PayrollItem, PayrollItemId
 from piaps.domain.enums.payroll_calculation_type import PayrollCalculationType
 from piaps.domain.enums.payroll_item_type import PayrollItemType
 from piaps.domain.value_objects.code import Code
+from piaps.domain.value_objects.name import Name
 from piaps.infrastructure.database.models.payroll_item import PayrollItemORM
 from piaps.infrastructure.database.readers.base import SAAbstractReader
 
@@ -47,20 +48,13 @@ class SAPayrollItemReader(IPayrollItemReader, SAAbstractReader[PayrollItem, Payr
     )
 
     async def find_by_id(self, id: PayrollItemId) -> PayrollItem | None:
-        query: Select[tuple[PayrollItemORM]] = select(PayrollItemORM).where(
-            PayrollItemORM.id == id
-        )
-        result: Result[tuple[PayrollItemORM]] = await self._execute(query)
-        row: PayrollItemORM | None = result.scalar_one_or_none()
-        return self._to_domain(row) if row else None
+        return await self._find(PayrollItemORM.id == id)
 
     async def find_by_code(self, code: Code) -> PayrollItem | None:
-        query: Select[tuple[PayrollItemORM]] = select(PayrollItemORM).where(
-            PayrollItemORM.code == code.value
-        )
-        result: Result[tuple[PayrollItemORM]] = await self._execute(query)
-        row: PayrollItemORM | None = result.scalar_one_or_none()
-        return self._to_domain(row) if row else None
+        return await self._find(PayrollItemORM.code == code.value)
+
+    async def find_by_name(self, name: Name) -> PayrollItem | None:
+        return await self._find(PayrollItemORM.name == name.value)
 
     async def search(
         self,

@@ -31,7 +31,6 @@ class IUserReader(Protocol):
     @abstractmethod
     async def find_by_username(self, username: Username) -> User | None: ...
 
-
     @abstractmethod
     async def find_by_employee_id(self, employee_id: EmployeeId) -> User | None: ...
 

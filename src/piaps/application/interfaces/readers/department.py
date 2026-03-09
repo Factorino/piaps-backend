@@ -11,6 +11,7 @@ from piaps.application.common.query.pagination import (
 from piaps.application.common.query.sort import Sort
 from piaps.domain.entities.department import Department, DepartmentId
 from piaps.domain.value_objects.code import Code
+from piaps.domain.value_objects.name import Name
 
 
 class DepartmentFilterField(StrEnum):
@@ -29,6 +30,9 @@ class IDepartmentReader(Protocol):
 
     @abstractmethod
     async def find_by_code(self, code: Code) -> Department | None: ...
+
+    @abstractmethod
+    async def find_by_name(self, name: Name) -> Department | None: ...
 
     @abstractmethod
     async def search(

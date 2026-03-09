@@ -11,6 +11,7 @@ from piaps.application.common.query.pagination import (
 from piaps.application.common.query.sort import Sort
 from piaps.domain.entities.position import Position, PositionId
 from piaps.domain.value_objects.code import Code
+from piaps.domain.value_objects.name import Name
 
 
 class PositionFilterField(StrEnum):
@@ -31,6 +32,9 @@ class IPositionReader(Protocol):
 
     @abstractmethod
     async def find_by_code(self, code: Code) -> Position | None: ...
+
+    @abstractmethod
+    async def find_by_name(self, name: Name) -> Position | None: ...
 
     @abstractmethod
     async def search(

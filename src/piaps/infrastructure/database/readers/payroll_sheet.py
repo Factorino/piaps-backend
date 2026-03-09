@@ -47,25 +47,17 @@ class SAPayrollSheetReader(IPayrollSheetReader, SAAbstractReader[PayrollSheet, P
     )
 
     async def find_by_id(self, id: PayrollSheetId) -> PayrollSheet | None:
-        query: Select[tuple[PayrollSheetORM]] = select(PayrollSheetORM).where(
-            PayrollSheetORM.id == id
-        )
-        result: Result[tuple[PayrollSheetORM]] = await self._execute(query)
-        row: PayrollSheetORM | None = result.scalar_one_or_none()
-        return self._to_domain(row) if row else None
+        return await self._find(PayrollSheetORM.id == id)
 
     async def find_by_employee_and_period(
         self,
         employee_id: EmployeeId,
         period: date,
     ) -> PayrollSheet | None:
-        query: Select[tuple[PayrollSheetORM]] = select(PayrollSheetORM).where(
+        return await self._find(
             PayrollSheetORM.employee_id == employee_id,
             PayrollSheetORM.period == period,
         )
-        result: Result[tuple[PayrollSheetORM]] = await self._execute(query)
-        row: PayrollSheetORM | None = result.scalar_one_or_none()
-        return self._to_domain(row) if row else None
 
     async def search(
         self,

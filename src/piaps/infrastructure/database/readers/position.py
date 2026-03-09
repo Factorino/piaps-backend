@@ -2,7 +2,6 @@ from enum import StrEnum
 from types import MappingProxyType
 from typing import ClassVar
 
-from sqlalchemy import Result, Select, select
 from sqlalchemy.orm import InstrumentedAttribute
 
 from piaps.application.common.query.filter import Filter
@@ -19,6 +18,7 @@ from piaps.application.interfaces.readers.position import (
 )
 from piaps.domain.entities.position import Position, PositionId
 from piaps.domain.value_objects.code import Code
+from piaps.domain.value_objects.name import Name
 from piaps.infrastructure.database.models.position import PositionORM
 from piaps.infrastructure.database.readers.base import SAAbstractReader
 
@@ -43,18 +43,13 @@ class SAPositionReader(IPositionReader, SAAbstractReader[Position, PositionORM])
     )
 
     async def find_by_id(self, id: PositionId) -> Position | None:
-        query: Select[tuple[PositionORM]] = select(PositionORM).where(PositionORM.id == id)
-        result: Result[tuple[PositionORM]] = await self._execute(query)
-        row: PositionORM | None = result.scalar_one_or_none()
-        return self._to_domain(row) if row else None
+        return await self._find(PositionORM.id == id)
 
     async def find_by_code(self, code: Code) -> Position | None:
-        query: Select[tuple[PositionORM]] = select(PositionORM).where(
-            PositionORM.code == code.value
-        )
-        result: Result[tuple[PositionORM]] = await self._execute(query)
-        row: PositionORM | None = result.scalar_one_or_none()
-        return self._to_domain(row) if row else None
+        return await self._find(PositionORM.code == code.value)
+
+    async def find_by_name(self, name: Name) -> Position | None:
+        return await self._find(PositionORM.name == name.value)
 
     async def search(
         self,

@@ -13,6 +13,7 @@ from piaps.domain.entities.payroll_item import PayrollItem, PayrollItemId
 from piaps.domain.enums.payroll_calculation_type import PayrollCalculationType
 from piaps.domain.enums.payroll_item_type import PayrollItemType
 from piaps.domain.value_objects.code import Code
+from piaps.domain.value_objects.name import Name
 
 
 class PayrollItemFilterField(StrEnum):
@@ -35,6 +36,9 @@ class IPayrollItemReader(Protocol):
 
     @abstractmethod
     async def find_by_code(self, code: Code) -> PayrollItem | None: ...
+
+    @abstractmethod
+    async def find_by_name(self, name: Name) -> PayrollItem | None: ...
 
     @abstractmethod
     async def search(

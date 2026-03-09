@@ -9,11 +9,11 @@ class BcryptPasswordHasher(IPasswordHasher):
         salt: bytes = bcrypt.gensalt()
         return bcrypt.hashpw(password.value.encode(), salt)
 
-    def verify_password(self, password: Password, hashed: bytes) -> bool:
-        if not hashed:
+    def verify_password(self, raw: str, hashed: bytes) -> bool:
+        if not raw or not hashed:
             return False
 
         try:
-            return bcrypt.checkpw(password.value.encode(), hashed)
+            return bcrypt.checkpw(raw.encode(), hashed)
         except (ValueError, TypeError):
             return False
