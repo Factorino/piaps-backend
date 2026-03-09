@@ -46,7 +46,7 @@ class Money(ValueObject):
         max_integer_digits: int = self._MAX_DIGITS - self._DECIMAL_PLACES
         if integer_digits > max_integer_digits:
             raise ValidationError(
-                f"Invalid money value: money value exceeds maximum of {max_integer_digits}"
+                f"Invalid money value: money value exceeds maximum of {max_integer_digits} "
                 f"integer digits"
             )
 

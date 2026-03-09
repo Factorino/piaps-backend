@@ -45,7 +45,7 @@ class ChangeUserRole(Interactor[ChangeUserRoleRequest, ChangeUserRoleResponse]):
 
         user.role = request.role
 
-        await self._user_repository.add(user)
+        await self._user_repository.update(user)
         await self._uow.commit()
 
         return ChangeUserRoleResponse(user=UserDTO.from_domain(user))

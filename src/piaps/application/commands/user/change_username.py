@@ -47,7 +47,7 @@ class ChangeUsername(Interactor[ChangeUsernameRequest, ChangeUsernameResponse]):
         user.username = Username(value=request.username)
 
         await self._check_unique(user)
-        await self._user_repository.add(user)
+        await self._user_repository.update(user)
         await self._uow.commit()
 
         return ChangeUsernameResponse(user=UserDTO.from_domain(user))

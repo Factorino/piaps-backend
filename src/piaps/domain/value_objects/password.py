@@ -1,3 +1,4 @@
+from dataclasses import field
 import re
 from typing import ClassVar
 
@@ -13,7 +14,7 @@ class Password(ValueObject):
         r"^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]+$"
     )
 
-    value: str
+    value: str = field(repr=False)
 
     def __post_init__(self) -> None:
         self._validate()

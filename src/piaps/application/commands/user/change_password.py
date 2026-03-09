@@ -48,11 +48,14 @@ class ChangePassword(Interactor[ChangePasswordRequest, ChangePasswordResponse]):
         if user is None:
             raise NotFoundError(f"User with id '{request.id}' not found")
 
+        if request.old_password == request.new_password:
+            raise ValidationError("New password cannot be the same as the old password")
+
         password = Password(value=request.new_password)
         password_hash: bytes = self._password_hasher.hash_password(password)
         user.password_hash = password_hash
 
-        await self._user_repository.add(user)
+        await self._user_repository.update(user)
         await self._uow.commit()
 
         return ChangePasswordResponse(user=UserDTO.from_domain(user))
@@ -74,6 +77,3 @@ class ChangePassword(Interactor[ChangePasswordRequest, ChangePasswordResponse]):
             request.old_password, current_user.password_hash
         ):
             raise AccessDeniedError("Old password is incorrect")
-
-        if request.old_password == request.new_password:
-            raise ValidationError("New password cannot be the same as the old password")

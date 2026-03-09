@@ -58,5 +58,5 @@ class RegisterUser(Interactor[RegisterUserRequest, RegisterUserResponse]):
 
     async def _check_unique(self, user: User) -> None:
         existing: User | None = await self._user_reader.find_by_username(user.username)
-        if existing is not None and existing.id != user.id:
+        if existing is not None:
             raise AlreadyExistsError(f"User with username '{user.username.value}' already exists")

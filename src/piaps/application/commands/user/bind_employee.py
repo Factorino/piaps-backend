@@ -64,7 +64,7 @@ class BindEmployeeByCode(Interactor[BindEmployeeByCodeRequest, BindEmployeeByCod
             user.employee_id = employee.id
             await self._check_unique(user)
 
-        await self._user_repository.add(user)
+        await self._user_repository.update(user)
         await self._uow.commit()
 
         return BindEmployeeByCodeResponse(user=UserDTO.from_domain(user))

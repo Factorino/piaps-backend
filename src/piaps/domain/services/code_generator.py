@@ -7,7 +7,6 @@ from piaps.domain.entities.department import Department
 from piaps.domain.entities.employee import Employee
 from piaps.domain.entities.payroll_item import PayrollItem
 from piaps.domain.entities.position import Position
-from piaps.domain.errors.base import NotFoundError
 from piaps.domain.value_objects.code import Code
 
 
@@ -24,7 +23,7 @@ class CodeGenerator:
     def generate(self, entity_type: type[Entity]) -> Code:
         prefix: str | None = self._PREFIXES.get(entity_type)
         if prefix is None:
-            raise NotFoundError(
+            raise ValueError(
                 f"No code prefix registered for entity type '{entity_type.__name__}'"
             )
 

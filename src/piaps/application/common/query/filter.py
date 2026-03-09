@@ -1,6 +1,5 @@
 from dataclasses import field
 from enum import StrEnum
-from typing import Any
 
 from piaps.application.common.dto.base import dto
 
@@ -47,7 +46,7 @@ class FilterStr[FieldT: StrEnum]:
 class FilterList[FieldT: StrEnum]:
     field: FieldT
     operator: OperatorList
-    value: list[Any]
+    value: list[int | float | str | bool]
 
 
 @dto
