@@ -31,11 +31,11 @@ class GetUserById(Interactor[GetUserByIdRequest, GetUserByIdResponse]):
         current_user: User = await self._idp.get_user()
         self._check_access(current_user, request.id)
 
-        target_user: User | None = await self._user_reader.find_by_id(request.id)
-        if target_user is None:
+        user: User | None = await self._user_reader.find_by_id(request.id)
+        if user is None:
             raise NotFoundError(f"User with id '{request.id}' not found")
 
-        return GetUserByIdResponse(user=UserDTO.from_domain(target_user))
+        return GetUserByIdResponse(user=UserDTO.from_domain(user))
 
     def _check_access(self, current_user: User, target_user_id: UserId) -> None:
         if current_user.role < UserRole.ADMINISTRATOR and current_user.id != target_user_id:

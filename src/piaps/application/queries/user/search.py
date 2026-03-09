@@ -49,9 +49,6 @@ class SearchUsers(Interactor[SearchUsersRequest, SearchUsersResponse]):
         data: list[UserDTO] = [UserDTO.from_domain(user) for user in result.data]
         return SearchUsersResponse(result=PaginationResult(data=data, meta=result.meta))
 
-    def _check_access(
-        self,
-        current_user: User,
-    ) -> None:
+    def _check_access(self, current_user: User) -> None:
         if current_user.role < UserRole.ADMINISTRATOR:
             raise AccessDeniedError("You don't have permission to read users")
