@@ -45,7 +45,7 @@ class IPayrollItemReader(Protocol):
         self,
         filter: Filter[PayrollItemFilterField] | None = None,
         sort: Sort[PayrollItemSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollItem]: ...
 
     @abstractmethod
@@ -54,5 +54,5 @@ class IPayrollItemReader(Protocol):
         payroll_type: PayrollItemType,
         calc_type: PayrollCalculationType | None = None,
         sort: Sort[PayrollItemSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollItem]: ...

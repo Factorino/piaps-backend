@@ -55,7 +55,7 @@ class SAPositionReader(IPositionReader, SAAbstractReader[Position, PositionORM])
         self,
         filter: Filter[PositionFilterField] | None = None,
         sort: Sort[PositionSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[Position]:
         return await self._search(filter, sort, pagination)
 

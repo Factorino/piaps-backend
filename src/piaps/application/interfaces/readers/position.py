@@ -41,5 +41,5 @@ class IPositionReader(Protocol):
         self,
         filter: Filter[PositionFilterField] | None = None,
         sort: Sort[PositionSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[Position]: ...

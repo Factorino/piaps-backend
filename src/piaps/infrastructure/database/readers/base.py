@@ -99,7 +99,7 @@ class SAAbstractReader[EntityT: Entity, ORMT: BaseORM](ABC):
         self,
         filter: Filter | None = None,
         sort: Sort | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
         *,
         base_query: Select[tuple[ORMT]] | None = None,
     ) -> PaginationResult[EntityT]:
@@ -119,8 +119,8 @@ class SAAbstractReader[EntityT: Entity, ORMT: BaseORM](ABC):
         items: list[EntityT] = [self._to_domain(row) for row in result.scalars().unique().all()]
 
         meta = PaginationResultMeta(
-            page=pagination.page,
-            page_size=pagination.page_size,
+            page=pagination.page if pagination else 1,
+            page_size=pagination.page_size if pagination else total,
             total=total,
         )
         return PaginationResult(data=items, meta=meta)
@@ -163,6 +163,9 @@ class SAAbstractReader[EntityT: Entity, ORMT: BaseORM](ABC):
     def _apply_pagination(
         self,
         query: Select[tuple[ORMT]],
-        pagination: Pagination,
+        pagination: Pagination | None,
     ) -> Select[tuple[ORMT]]:
+        if pagination is None:
+            return query
+
         return query.offset(pagination.offset).limit(pagination.limit)

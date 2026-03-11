@@ -56,7 +56,7 @@ class SAEmployeeReader(IEmployeeReader, SAAbstractReader[Employee, EmployeeORM])
         self,
         filter: Filter[EmployeeFilterField] | None = None,
         sort: Sort[EmployeeSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[Employee]:
         return await self._search(filter, sort, pagination)
 
@@ -64,7 +64,7 @@ class SAEmployeeReader(IEmployeeReader, SAAbstractReader[Employee, EmployeeORM])
         self,
         department_id: DepartmentId,
         sort: Sort[EmployeeSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[Employee]:
         base_query: Select[tuple[EmployeeORM]] = select(EmployeeORM).where(
             EmployeeORM.department_id == department_id
@@ -75,7 +75,7 @@ class SAEmployeeReader(IEmployeeReader, SAAbstractReader[Employee, EmployeeORM])
         self,
         position_id: PositionId,
         sort: Sort[EmployeeSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[Employee]:
         base_query: Select[tuple[EmployeeORM]] = select(EmployeeORM).where(
             EmployeeORM.position_id == position_id

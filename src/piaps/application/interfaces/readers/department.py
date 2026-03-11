@@ -39,5 +39,5 @@ class IDepartmentReader(Protocol):
         self,
         filter: Filter[DepartmentFilterField] | None = None,
         sort: Sort[DepartmentSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[Department]: ...

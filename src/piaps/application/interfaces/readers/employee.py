@@ -41,7 +41,7 @@ class IEmployeeReader(Protocol):
         self,
         filter: Filter[EmployeeFilterField] | None = None,
         sort: Sort[EmployeeSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[Employee]: ...
 
     @abstractmethod
@@ -49,7 +49,7 @@ class IEmployeeReader(Protocol):
         self,
         department_id: DepartmentId,
         sort: Sort[EmployeeSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[Employee]: ...
 
     @abstractmethod
@@ -57,5 +57,5 @@ class IEmployeeReader(Protocol):
         self,
         position_id: PositionId,
         sort: Sort[EmployeeSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[Employee]: ...

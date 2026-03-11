@@ -60,7 +60,7 @@ class SAPayrollItemReader(IPayrollItemReader, SAAbstractReader[PayrollItem, Payr
         self,
         filter: Filter[PayrollItemFilterField] | None = None,
         sort: Sort[PayrollItemSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollItem]:
         return await self._search(filter, sort, pagination)
 
@@ -69,7 +69,7 @@ class SAPayrollItemReader(IPayrollItemReader, SAAbstractReader[PayrollItem, Payr
         payroll_type: PayrollItemType,
         calc_type: PayrollCalculationType | None = None,
         sort: Sort[PayrollItemSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollItem]:
         base_query: Select[tuple[PayrollItemORM]] = select(PayrollItemORM).where(
             PayrollItemORM.payroll_type == payroll_type

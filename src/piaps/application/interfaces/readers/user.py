@@ -39,5 +39,5 @@ class IUserReader(Protocol):
         self,
         filter: Filter[UserFilterField] | None = None,
         sort: Sort[UserSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[User]: ...

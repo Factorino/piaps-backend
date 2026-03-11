@@ -44,7 +44,7 @@ class IPayrollSheetReader(Protocol):
         self,
         filter: Filter[PayrollSheetFilterField] | None = None,
         sort: Sort[PayrollSheetSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollSheet]: ...
 
     @abstractmethod
@@ -54,7 +54,7 @@ class IPayrollSheetReader(Protocol):
         period: DateBetween | None = None,
         status: PayrollStatus | None = None,
         sort: Sort[PayrollSheetSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollSheet]: ...
 
     @abstractmethod
@@ -64,5 +64,5 @@ class IPayrollSheetReader(Protocol):
         period: DateBetween | None = None,
         status: PayrollStatus | None = None,
         sort: Sort[PayrollSheetSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollSheet]: ...

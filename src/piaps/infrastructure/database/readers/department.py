@@ -53,7 +53,7 @@ class SADepartmentReader(IDepartmentReader, SAAbstractReader[Department, Departm
         self,
         filter: Filter[DepartmentFilterField] | None = None,
         sort: Sort[DepartmentSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[Department]:
         return await self._search(filter, sort, pagination)
 

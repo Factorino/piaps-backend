@@ -3,7 +3,7 @@ from enum import StrEnum
 from types import MappingProxyType
 from typing import ClassVar
 
-from sqlalchemy import Result, Select, select
+from sqlalchemy import Select, select
 from sqlalchemy.orm import InstrumentedAttribute
 
 from piaps.application.common.query.between import DateBetween
@@ -63,7 +63,7 @@ class SAPayrollSheetReader(IPayrollSheetReader, SAAbstractReader[PayrollSheet, P
         self,
         filter: Filter[PayrollSheetFilterField] | None = None,
         sort: Sort[PayrollSheetSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollSheet]:
         return await self._search(filter, sort, pagination)
 
@@ -73,7 +73,7 @@ class SAPayrollSheetReader(IPayrollSheetReader, SAAbstractReader[PayrollSheet, P
         period: DateBetween | None = None,
         status: PayrollStatus | None = None,
         sort: Sort[PayrollSheetSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollSheet]:
         base_query: Select[tuple[PayrollSheetORM]] = select(PayrollSheetORM).where(
             PayrollSheetORM.employee_id == employee_id
@@ -89,7 +89,7 @@ class SAPayrollSheetReader(IPayrollSheetReader, SAAbstractReader[PayrollSheet, P
         period: DateBetween | None = None,
         status: PayrollStatus | None = None,
         sort: Sort[PayrollSheetSortField] | None = None,
-        pagination: Pagination = DEFAULT_PAGINATION,
+        pagination: Pagination | None = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollSheet]:
         base_query: Select[tuple[PayrollSheetORM]] = (
             select(PayrollSheetORM)
