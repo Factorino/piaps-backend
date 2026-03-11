@@ -38,15 +38,12 @@ class RegisterUser(Interactor[RegisterUserRequest, RegisterUserResponse]):
         self._uow: ITransactionManager = transaction_manager
 
     async def execute(self, request: RegisterUserRequest) -> RegisterUserResponse:
-        id_: UserId = UserId(uuid4())
-        username = Username(value=request.username)
         password = Password(value=request.password)
-
         password_hash: bytes = self._password_hasher.hash_password(password)
 
         user = User(
-            id=id_,
-            username=username,
+            id=UserId(uuid4()),
+            username=Username(value=request.username),
             password_hash=password_hash,
         )
 

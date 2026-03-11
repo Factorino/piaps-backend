@@ -57,24 +57,20 @@ class CreateEmployee(Interactor[CreateEmployeeRequest, CreateEmployeeResponse]):
         current_user: User = await self._idp.get_user()
         self._check_access(current_user)
 
-        id_: EmployeeId = EmployeeId(uuid4())
         code: Code = await self._generate_unique_code()
         full_name = FullName(
             last_name=request.last_name,
             first_name=request.first_name,
             middle_name=request.middle_name,
         )
-        hire_date: date = request.hire_date
-        department_id: DepartmentId = request.department_id
-        position_id: PositionId = request.position_id
 
         employee = Employee(
-            id=id_,
+            id=EmployeeId(uuid4()),
             code=code,
             full_name=full_name,
-            hire_date=hire_date,
-            department_id=department_id,
-            position_id=position_id,
+            hire_date=request.hire_date,
+            department_id=request.department_id,
+            position_id=request.position_id,
         )
 
         await self._employee_repository.add(employee)

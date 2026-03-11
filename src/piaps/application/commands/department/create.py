@@ -51,16 +51,13 @@ class CreateDepartment(Interactor[CreateDepartmentRequest, CreateDepartmentRespo
         current_user: User = await self._idp.get_user()
         self._check_access(current_user)
 
-        id_: DepartmentId = DepartmentId(uuid4())
         code: Code = await self._generate_unique_code()
-        name = Name(value=request.name)
-        description: str | None = request.description
 
         department = Department(
-            id=id_,
+            id=DepartmentId(uuid4()),
             code=code,
-            name=name,
-            description=description,
+            name=Name(value=request.name),
+            description=request.description,
         )
 
         await self._check_unique(department)

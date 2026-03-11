@@ -53,6 +53,7 @@ class ChangePassword(Interactor[ChangePasswordRequest, ChangePasswordResponse]):
 
         password = Password(value=request.new_password)
         password_hash: bytes = self._password_hasher.hash_password(password)
+        
         user.password_hash = password_hash
 
         await self._user_repository.update(user)

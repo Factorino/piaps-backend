@@ -56,20 +56,15 @@ class CreatePayrollItem(Interactor[CreatePayrollItemRequest, CreatePayrollItemRe
         current_user: User = await self._idp.get_user()
         self._check_access(current_user)
 
-        id_: PayrollItemId = PayrollItemId(uuid4())
         code: Code = await self._generate_unique_code()
-        name = Name(value=request.name)
-        payroll_type: PayrollItemType = request.payroll_type
-        calc_type: PayrollCalculationType = request.calc_type
-        value: Decimal | None = request.value
 
         payroll_item = PayrollItem(
-            id=id_,
+            id=PayrollItemId(uuid4()),
             code=code,
-            name=name,
-            payroll_type=payroll_type,
-            calc_type=calc_type,
-            value=value,
+            name=Name(value=request.name),
+            payroll_type=request.payroll_type,
+            calc_type=request.calc_type,
+            value=request.value,
         )
 
         await self._check_unique(payroll_item)

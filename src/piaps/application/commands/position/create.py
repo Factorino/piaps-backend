@@ -54,18 +54,14 @@ class CreatePosition(Interactor[CreatePositionRequest, CreatePositionResponse]):
         current_user: User = await self._idp.get_user()
         self._check_access(current_user)
 
-        id_: PositionId = PositionId(uuid4())
         code: Code = await self._generate_unique_code()
-        name = Name(value=request.name)
-        base_salary = Money(value=request.base_salary)
-        description: str | None = request.description
 
         position = Position(
-            id=id_,
+            id=PositionId(uuid4()),
             code=code,
-            name=name,
-            base_salary=base_salary,
-            description=description,
+            name=Name(value=request.name),
+            base_salary=Money(value=request.base_salary),
+            description=request.description,
         )
 
         await self._check_unique(position)

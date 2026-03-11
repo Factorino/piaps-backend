@@ -49,20 +49,15 @@ class CreateUser(Interactor[CreateUserRequest, CreateUserResponse]):
         current_user: User = await self._idp.get_user()
         self._check_access(current_user)
 
-        id_: UserId = UserId(uuid4())
-        username = Username(value=request.username)
         password = Password(value=request.password)
-        role: UserRole = request.role
-        employee_id: EmployeeId | None = request.employee_id
-
         password_hash: bytes = self._password_hasher.hash_password(password)
 
         user = User(
-            id=id_,
-            username=username,
+            id=UserId(uuid4()),
+            username=Username(value=request.username),
             password_hash=password_hash,
-            role=role,
-            employee_id=employee_id,
+            role=request.role,
+            employee_id=request.employee_id,
         )
 
         await self._check_unique(user)
