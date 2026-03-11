@@ -2,7 +2,7 @@ from typing import Final
 from uuid import uuid4
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.department import DepartmentDTO
+from piaps.application.common.dto.views.department import DepartmentView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.errors.base import OperationFailedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
@@ -27,7 +27,7 @@ class CreateDepartmentRequest:
 
 @dto
 class CreateDepartmentResponse:
-    department: DepartmentDTO
+    department: DepartmentView
 
 
 class CreateDepartment(Interactor[CreateDepartmentRequest, CreateDepartmentResponse]):
@@ -64,7 +64,7 @@ class CreateDepartment(Interactor[CreateDepartmentRequest, CreateDepartmentRespo
         await self._department_repository.add(department)
         await self._uow.commit()
 
-        return CreateDepartmentResponse(department=DepartmentDTO.from_domain(department))
+        return CreateDepartmentResponse(department=DepartmentView.from_domain(department))
 
     async def _generate_unique_code(self) -> Code:
         for _ in range(self._MAX_CODE_GEN_ATTEMPTS):

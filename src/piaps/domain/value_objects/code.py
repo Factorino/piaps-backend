@@ -19,11 +19,18 @@ class Code(ValueObject):
 
     @classmethod
     def from_str(cls, code: str) -> Self:
-        prefix, uid = code.split(cls._DELIMITER, maxsplit=1)
+        exception = ValidationError(
+            f"Invalid code format: expected '<PREFIX><{cls._DELIMITER}><uid>'"
+        )
+
+        parts: list[str] = code.split(cls._DELIMITER, maxsplit=1)
+        if len(parts) < 2:
+            raise exception
+
+        prefix, uid = parts
         if not prefix or not uid:
-            raise ValidationError(
-                f"Invalid code format: expected '<PREFIX><{cls._DELIMITER}><uid>'"
-            )
+            raise exception
+
         return cls(prefix=prefix, uid=uid)
 
     @property

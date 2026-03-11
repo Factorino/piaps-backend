@@ -1,5 +1,5 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.payroll_sheet import PayrollSheetDTO
+from piaps.application.common.dto.views.payroll_sheet import PayrollSheetView
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
 from piaps.application.interfaces.readers.payroll_sheet import IPayrollSheetReader
@@ -16,7 +16,7 @@ class GetPayrollSheetByIdRequest:
 
 @dto
 class GetPayrollSheetByIdResponse:
-    payroll_sheet: PayrollSheetDTO
+    payroll_sheet: PayrollSheetView
 
 
 class GetPayrollByIdSheet(Interactor[GetPayrollSheetByIdRequest, GetPayrollSheetByIdResponse]):
@@ -40,7 +40,7 @@ class GetPayrollByIdSheet(Interactor[GetPayrollSheetByIdRequest, GetPayrollSheet
         self._check_access(current_user, payroll_sheet)
 
         return GetPayrollSheetByIdResponse(
-            payroll_sheet=PayrollSheetDTO.from_domain(payroll_sheet)
+            payroll_sheet=PayrollSheetView.from_domain(payroll_sheet)
         )
 
     def _check_access(self, current_user: User, payroll_sheet: PayrollSheet) -> None:

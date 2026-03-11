@@ -5,7 +5,7 @@ from piaps.domain.entities.department import Department, DepartmentId
 
 
 @dto
-class DepartmentDTO:
+class DepartmentView:
     id: DepartmentId
     code: str
     name: str

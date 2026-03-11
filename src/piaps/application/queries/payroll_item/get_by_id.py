@@ -1,5 +1,5 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.payroll_item import PayrollItemDTO
+from piaps.application.common.dto.views.payroll_item import PayrollItemView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -17,7 +17,7 @@ class GetPayrollItemByIdRequest:
 
 @dto
 class GetPayrollItemByIdResponse:
-    user: PayrollItemDTO
+    user: PayrollItemView
 
 
 class GetPayrollItemById(Interactor[GetPayrollItemByIdRequest, GetPayrollItemByIdResponse]):
@@ -37,7 +37,7 @@ class GetPayrollItemById(Interactor[GetPayrollItemByIdRequest, GetPayrollItemByI
         if payroll_item is None:
             raise NotFoundError(f"Payroll item with id '{request.id}' not found")
 
-        return GetPayrollItemByIdResponse(user=PayrollItemDTO.from_domain(payroll_item))
+        return GetPayrollItemByIdResponse(user=PayrollItemView.from_domain(payroll_item))
 
     def _check_access(self, current_user: User) -> None:
         if current_user.role < UserRole.ACCOUNTANT:

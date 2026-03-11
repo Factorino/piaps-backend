@@ -8,7 +8,7 @@ from piaps.domain.entities.position import PositionId
 
 
 @dto
-class EmployeeDTO:
+class EmployeeView:
     id: EmployeeId
     code: str
     last_name: str

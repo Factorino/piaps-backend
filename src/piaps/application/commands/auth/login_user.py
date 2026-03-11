@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.user import UserDTO
+from piaps.application.common.dto.views.user import UserView
 from piaps.application.errors.auth import InvalidCredentialsError
 from piaps.application.interfaces.auth.jwt_provider import IJWTProvider, TokenPayload
 from piaps.application.interfaces.auth.password_hasher import IPasswordHasher
@@ -26,7 +26,7 @@ class LoginUserResponse:
     access_token: str
     refresh_token: str
     token_type: str = "Bearer"  # noqa: S105
-    user: UserDTO
+    user: UserView
 
 
 class LoginUser(Interactor[LoginUserRequest, LoginUserResponse]):
@@ -62,5 +62,5 @@ class LoginUser(Interactor[LoginUserRequest, LoginUserResponse]):
         return LoginUserResponse(
             access_token=access_token,
             refresh_token=refresh_token,
-            user=UserDTO.from_domain(user),
+            user=UserView.from_domain(user),
         )

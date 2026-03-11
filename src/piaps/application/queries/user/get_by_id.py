@@ -1,5 +1,5 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.user import UserDTO
+from piaps.application.common.dto.views.user import UserView
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
 from piaps.application.interfaces.readers.user import IUserReader
@@ -15,7 +15,7 @@ class GetUserByIdRequest:
 
 @dto
 class GetUserByIdResponse:
-    user: UserDTO
+    user: UserView
 
 
 class GetUserById(Interactor[GetUserByIdRequest, GetUserByIdResponse]):
@@ -35,7 +35,7 @@ class GetUserById(Interactor[GetUserByIdRequest, GetUserByIdResponse]):
         if user is None:
             raise NotFoundError(f"User with id '{request.id}' not found")
 
-        return GetUserByIdResponse(user=UserDTO.from_domain(user))
+        return GetUserByIdResponse(user=UserView.from_domain(user))
 
     def _check_access(self, current_user: User, target_user_id: UserId) -> None:
         if current_user.role < UserRole.ADMINISTRATOR and current_user.id != target_user_id:

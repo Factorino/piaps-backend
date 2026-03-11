@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.payroll_item import PayrollItemDTO
+from piaps.application.common.dto.views.payroll_item import PayrollItemView
 from piaps.application.common.not_set import NOTSET, NotSet, is_set
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
@@ -29,7 +29,7 @@ class UpdatePayrollItemRequest:
 
 @dto
 class UpdatePayrollItemResponse:
-    payroll_item: PayrollItemDTO
+    payroll_item: PayrollItemView
 
 
 class UpdatePayrollItem(Interactor[UpdatePayrollItemRequest, UpdatePayrollItemResponse]):
@@ -66,7 +66,7 @@ class UpdatePayrollItem(Interactor[UpdatePayrollItemRequest, UpdatePayrollItemRe
         await self._payroll_item_repository.update(payroll_item)
         await self._uow.commit()
 
-        return UpdatePayrollItemResponse(payroll_item=PayrollItemDTO.from_domain(payroll_item))
+        return UpdatePayrollItemResponse(payroll_item=PayrollItemView.from_domain(payroll_item))
 
     async def _check_unique(self, payroll_item: PayrollItem) -> None:
         existing: PayrollItem | None = await self._payroll_item_reader.find_by_name(

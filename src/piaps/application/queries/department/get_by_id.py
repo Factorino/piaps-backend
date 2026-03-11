@@ -1,5 +1,5 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.department import DepartmentDTO
+from piaps.application.common.dto.views.department import DepartmentView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -17,7 +17,7 @@ class GetDepartmentByIdRequest:
 
 @dto
 class GetDepartmentByIdResponse:
-    user: DepartmentDTO
+    user: DepartmentView
 
 
 class GetDepartmentById(Interactor[GetDepartmentByIdRequest, GetDepartmentByIdResponse]):
@@ -37,7 +37,7 @@ class GetDepartmentById(Interactor[GetDepartmentByIdRequest, GetDepartmentByIdRe
         if department is None:
             raise NotFoundError(f"Department with id '{request.id}' not found")
 
-        return GetDepartmentByIdResponse(user=DepartmentDTO.from_domain(department))
+        return GetDepartmentByIdResponse(user=DepartmentView.from_domain(department))
 
     def _check_access(self, current_user: User) -> None:
         if current_user.role < UserRole.ACCOUNTANT:

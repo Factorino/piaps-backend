@@ -1,9 +1,12 @@
-from datetime import date
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.query.between import DateBetween
+from piaps.application.common.dto.query.between import DateBetween
+from piaps.application.common.dto.report.payroll_summary import (
+    PayrollSummaryByDepartmentData,
+    PayrollSummaryReportData,
+)
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -24,33 +27,10 @@ from piaps.domain.enums.user_role import UserRole
 
 
 if TYPE_CHECKING:
-    from piaps.application.common.query.pagination import PaginationResult
+    from piaps.application.common.dto.query.pagination import PaginationResult
     from piaps.domain.entities.employee import Employee, EmployeeId
     from piaps.domain.entities.payroll_sheet import PayrollSheet
     from piaps.domain.entities.position import Position
-
-
-@dto
-class PayrollSummaryByDepartmentDTO:
-    department_code: str
-    department_name: str
-    employee_count: int
-    total_base_salary: Decimal
-    total_accruals: Decimal
-    total_deductions: Decimal
-    total_net_salary: Decimal
-
-
-@dto
-class PayrollSummaryReportData:
-    period_from: date | None
-    period_to: date | None
-    departments: list[PayrollSummaryByDepartmentDTO]
-    total_employee_count: int
-    grand_total_base_salary: Decimal
-    grand_total_accruals: Decimal
-    grand_total_deductions: Decimal
-    grand_total_net_salary: Decimal
 
 
 @dto
@@ -95,7 +75,7 @@ class GetPayrollSummaryReport(
             pagination=None
         )
 
-        department_summaries: list[PayrollSummaryByDepartmentDTO] = []
+        department_summaries: list[PayrollSummaryByDepartmentData] = []
         total_employee_count = 0
         grand_total_base_salary = Decimal(0)
         grand_total_accruals = Decimal(0)
@@ -103,7 +83,7 @@ class GetPayrollSummaryReport(
         grand_total_net_salary = Decimal(0)
 
         for department in departments_result.data:
-            summary: PayrollSummaryByDepartmentDTO = await self._build_department_summary(
+            summary: PayrollSummaryByDepartmentData = await self._build_department_summary(
                 department=department,
                 period=request.period,
                 status=request.status,
@@ -140,7 +120,7 @@ class GetPayrollSummaryReport(
         department: Department,
         period: DateBetween,
         status: PayrollStatus | None,
-    ) -> PayrollSummaryByDepartmentDTO:
+    ) -> PayrollSummaryByDepartmentData:
         sheets_result: PaginationResult[
             PayrollSheet
         ] = await self._payroll_sheet_reader.search_by_department(
@@ -173,7 +153,7 @@ class GetPayrollSummaryReport(
             total_deductions += sheet.deductions_sum.value
             total_net_salary += sheet.net_salary.value
 
-        return PayrollSummaryByDepartmentDTO(
+        return PayrollSummaryByDepartmentData(
             department_code=department.code.value,
             department_name=department.name.value,
             employee_count=len(employee_ids),

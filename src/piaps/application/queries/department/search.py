@@ -1,14 +1,14 @@
 from typing import TYPE_CHECKING
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.department import DepartmentDTO
-from piaps.application.common.query.filter import Filter
-from piaps.application.common.query.pagination import (
+from piaps.application.common.dto.query.filter import Filter
+from piaps.application.common.dto.query.pagination import (
     DEFAULT_PAGINATION,
     Pagination,
     PaginationResult,
 )
-from piaps.application.common.query.sort import Sort
+from piaps.application.common.dto.query.sort import Sort
+from piaps.application.common.dto.views.department import DepartmentView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -34,7 +34,7 @@ class SearchDepartmentsRequest:
 
 @dto
 class SearchDepartmentsResponse:
-    result: PaginationResult[DepartmentDTO]
+    result: PaginationResult[DepartmentView]
 
 
 class SearchDepartments(Interactor[SearchDepartmentsRequest, SearchDepartmentsResponse]):
@@ -56,7 +56,7 @@ class SearchDepartments(Interactor[SearchDepartmentsRequest, SearchDepartmentsRe
             pagination=request.pagination,
         )
 
-        data: list[DepartmentDTO] = [DepartmentDTO.from_domain(dep) for dep in result.data]
+        data: list[DepartmentView] = [DepartmentView.from_domain(dep) for dep in result.data]
         return SearchDepartmentsResponse(result=PaginationResult(data=data, meta=result.meta))
 
     def _check_access(self, current_user: User) -> None:

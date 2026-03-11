@@ -1,5 +1,5 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.department import DepartmentDTO
+from piaps.application.common.dto.views.department import DepartmentView
 from piaps.application.common.not_set import NOTSET, NotSet, is_set
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
@@ -23,7 +23,7 @@ class UpdateDepartmentRequest:
 
 @dto
 class UpdateDepartmentResponse:
-    department: DepartmentDTO
+    department: DepartmentView
 
 
 class UpdateDepartment(Interactor[UpdateDepartmentRequest, UpdateDepartmentResponse]):
@@ -56,7 +56,7 @@ class UpdateDepartment(Interactor[UpdateDepartmentRequest, UpdateDepartmentRespo
         await self._department_repository.update(department)
         await self._uow.commit()
 
-        return UpdateDepartmentResponse(department=DepartmentDTO.from_domain(department))
+        return UpdateDepartmentResponse(department=DepartmentView.from_domain(department))
 
     async def _check_unique(self, department: Department) -> None:
         existing: Department | None = await self._department_reader.find_by_name(department.name)

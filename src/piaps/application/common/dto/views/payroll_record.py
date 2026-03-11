@@ -3,16 +3,16 @@ from decimal import Decimal
 from typing import Self
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.payroll_item import PayrollItemDTO
+from piaps.application.common.dto.views.payroll_item import PayrollItemView
 from piaps.domain.entities.employee import EmployeeId
 from piaps.domain.entities.payroll_record import PayrollRecord, PayrollRecordId
 
 
 @dto
-class PayrollRecordDTO:
+class PayrollRecordView:
     id: PayrollRecordId
     employee_id: EmployeeId
-    payroll_item: PayrollItemDTO
+    payroll_item: PayrollItemView
     period: date
     amount: Decimal
     comment: str | None = None
@@ -22,7 +22,7 @@ class PayrollRecordDTO:
         return cls(
             id=entity.id,
             employee_id=entity.employee_id,
-            payroll_item=PayrollItemDTO.from_domain(entity.payroll_item),
+            payroll_item=PayrollItemView.from_domain(entity.payroll_item),
             period=entity.period,
             amount=entity.amount.value,
             comment=entity.comment,

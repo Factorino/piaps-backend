@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.position import PositionDTO
+from piaps.application.common.dto.views.position import PositionView
 from piaps.application.common.not_set import NOTSET, NotSet, is_set
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
@@ -27,7 +27,7 @@ class UpdatePositionRequest:
 
 @dto
 class UpdatePositionResponse:
-    position: PositionDTO
+    position: PositionView
 
 
 class UpdatePosition(Interactor[UpdatePositionRequest, UpdatePositionResponse]):
@@ -62,7 +62,7 @@ class UpdatePosition(Interactor[UpdatePositionRequest, UpdatePositionResponse]):
         await self._position_repository.update(position)
         await self._uow.commit()
 
-        return UpdatePositionResponse(position=PositionDTO.from_domain(position))
+        return UpdatePositionResponse(position=PositionView.from_domain(position))
 
     async def _check_unique(self, position: Position) -> None:
         existing: Position | None = await self._position_reader.find_by_name(position.name)

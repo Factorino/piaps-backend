@@ -1,5 +1,5 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.employee import EmployeeDTO
+from piaps.application.common.dto.views.employee import EmployeeView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -17,7 +17,7 @@ class GetEmployeeByIdRequest:
 
 @dto
 class GetEmployeeByIdResponse:
-    user: EmployeeDTO
+    user: EmployeeView
 
 
 class GetEmployeeById(Interactor[GetEmployeeByIdRequest, GetEmployeeByIdResponse]):
@@ -37,7 +37,7 @@ class GetEmployeeById(Interactor[GetEmployeeByIdRequest, GetEmployeeByIdResponse
         if employee is None:
             raise NotFoundError(f"Employee with id '{request.id}' not found")
 
-        return GetEmployeeByIdResponse(user=EmployeeDTO.from_domain(employee))
+        return GetEmployeeByIdResponse(user=EmployeeView.from_domain(employee))
 
     def _check_access(self, current_user: User) -> None:
         if current_user.role < UserRole.ACCOUNTANT:

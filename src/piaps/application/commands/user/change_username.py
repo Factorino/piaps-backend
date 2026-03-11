@@ -1,5 +1,5 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.user import UserDTO
+from piaps.application.common.dto.views.user import UserView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -20,7 +20,7 @@ class ChangeUsernameRequest:
 
 @dto
 class ChangeUsernameResponse:
-    user: UserDTO
+    user: UserView
 
 
 class ChangeUsername(Interactor[ChangeUsernameRequest, ChangeUsernameResponse]):
@@ -50,7 +50,7 @@ class ChangeUsername(Interactor[ChangeUsernameRequest, ChangeUsernameResponse]):
         await self._user_repository.update(user)
         await self._uow.commit()
 
-        return ChangeUsernameResponse(user=UserDTO.from_domain(user))
+        return ChangeUsernameResponse(user=UserView.from_domain(user))
 
     async def _check_unique(self, user: User) -> None:
         existing: User | None = await self._user_reader.find_by_username(user.username)

@@ -1,9 +1,13 @@
-from datetime import date
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.query.between import DateBetween
+from piaps.application.common.dto.query.between import DateBetween
+from piaps.application.common.dto.report.employee_payroll import (
+    EmployeePayrollReportData,
+    PayrollRecordData,
+    PayrollSheetData,
+)
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -22,44 +26,12 @@ from piaps.domain.entities.employee import Employee, EmployeeId
 from piaps.domain.entities.payroll_sheet import PayrollSheet
 from piaps.domain.entities.position import Position
 from piaps.domain.entities.user import User
-from piaps.domain.enums.payroll_item_type import PayrollItemType
 from piaps.domain.enums.user_role import UserRole
 from piaps.domain.errors.base import NotFoundError
 
 
 if TYPE_CHECKING:
-    from piaps.application.common.query.pagination import PaginationResult
-
-
-@dto
-class EmployeePayrollRecordDTO:
-    payroll_item_code: str
-    payroll_item_name: str
-    payroll_type: PayrollItemType
-    amount: Decimal
-    comment: str | None = None
-
-
-@dto
-class EmployeePayrollSheetDTO:
-    period: date
-    accruals_sum: Decimal
-    deductions_sum: Decimal
-    net_salary: Decimal
-    records: list[EmployeePayrollRecordDTO]
-
-
-@dto
-class EmployeePayrollReportData:
-    employee_code: str
-    employee_full_name: str
-    department_name: str
-    position_name: str
-    base_salary: Decimal
-    sheets: list[EmployeePayrollSheetDTO]
-    total_accruals: Decimal
-    total_deductions: Decimal
-    total_net_salary: Decimal
+    from piaps.application.common.dto.query.pagination import PaginationResult
 
 
 @dto
@@ -140,14 +112,14 @@ class GetEmployeePayrollReport(
         position: Position,
         sheets: list[PayrollSheet],
     ) -> EmployeePayrollReportData:
-        sheet_dtos: list[EmployeePayrollSheetDTO] = []
+        sheet_dtos: list[PayrollSheetData] = []
         total_accruals = Decimal(0)
         total_deductions = Decimal(0)
         total_net_salary = Decimal(0)
 
         for sheet in sheets:
-            records_dto: list[EmployeePayrollRecordDTO] = [
-                EmployeePayrollRecordDTO(
+            records_dto: list[PayrollRecordData] = [
+                PayrollRecordData(
                     payroll_item_code=record.payroll_item.code.value,
                     payroll_item_name=record.payroll_item.name.value,
                     payroll_type=record.payroll_item.payroll_type,
@@ -157,7 +129,7 @@ class GetEmployeePayrollReport(
                 for record in sheet.records
             ]
 
-            sheet_dto = EmployeePayrollSheetDTO(
+            sheet_dto = PayrollSheetData(
                 period=sheet.period,
                 accruals_sum=sheet.accruals_sum.value,
                 deductions_sum=sheet.deductions_sum.value,

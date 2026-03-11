@@ -2,7 +2,7 @@ from datetime import date
 from uuid import uuid4
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.payroll_sheet import PayrollSheetDTO
+from piaps.application.common.dto.views.payroll_sheet import PayrollSheetView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -25,7 +25,7 @@ class CreatePayrollSheetRequest:
 
 @dto
 class CreatePayrollSheetResponse:
-    payroll_sheet: PayrollSheetDTO
+    payroll_sheet: PayrollSheetView
 
 
 class CreatePayrollSheet(Interactor[CreatePayrollSheetRequest, CreatePayrollSheetResponse]):
@@ -62,7 +62,9 @@ class CreatePayrollSheet(Interactor[CreatePayrollSheetRequest, CreatePayrollShee
         await self._payroll_sheet_repository.add(payroll_sheet)
         await self._uow.commit()
 
-        return CreatePayrollSheetResponse(payroll_sheet=PayrollSheetDTO.from_domain(payroll_sheet))
+        return CreatePayrollSheetResponse(
+            payroll_sheet=PayrollSheetView.from_domain(payroll_sheet)
+        )
 
     async def _check_unique(self, employee_id: EmployeeId, period: date) -> None:
         existing: (

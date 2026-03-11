@@ -2,24 +2,21 @@ from enum import StrEnum
 from types import MappingProxyType
 from typing import ClassVar
 
-from sqlalchemy import Select, select
 from sqlalchemy.orm import InstrumentedAttribute
 
-from piaps.application.common.query.filter import Filter
-from piaps.application.common.query.pagination import (
+from piaps.application.common.dto.query.filter import Filter
+from piaps.application.common.dto.query.pagination import (
     DEFAULT_PAGINATION,
     Pagination,
     PaginationResult,
 )
-from piaps.application.common.query.sort import Sort
+from piaps.application.common.dto.query.sort import Sort
 from piaps.application.interfaces.readers.payroll_item import (
     IPayrollItemReader,
     PayrollItemFilterField,
     PayrollItemSortField,
 )
 from piaps.domain.entities.payroll_item import PayrollItem, PayrollItemId
-from piaps.domain.enums.payroll_calculation_type import PayrollCalculationType
-from piaps.domain.enums.payroll_item_type import PayrollItemType
 from piaps.domain.value_objects.code import Code
 from piaps.domain.value_objects.name import Name
 from piaps.infrastructure.database.models.payroll_item import PayrollItemORM
@@ -60,23 +57,9 @@ class SAPayrollItemReader(IPayrollItemReader, SAAbstractReader[PayrollItem, Payr
         self,
         filter: Filter[PayrollItemFilterField] | None = None,
         sort: Sort[PayrollItemSortField] | None = None,
-        pagination: Pagination | None = DEFAULT_PAGINATION,
+        pagination: Pagination = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollItem]:
         return await self._search(filter, sort, pagination)
-
-    async def search_by_type(
-        self,
-        payroll_type: PayrollItemType,
-        calc_type: PayrollCalculationType | None = None,
-        sort: Sort[PayrollItemSortField] | None = None,
-        pagination: Pagination | None = DEFAULT_PAGINATION,
-    ) -> PaginationResult[PayrollItem]:
-        base_query: Select[tuple[PayrollItemORM]] = select(PayrollItemORM).where(
-            PayrollItemORM.payroll_type == payroll_type
-        )
-        if calc_type is not None:
-            base_query = base_query.where(PayrollItemORM.calc_type == calc_type)
-        return await self._search(sort=sort, pagination=pagination, base_query=base_query)
 
     def _to_domain(self, orm_obj: PayrollItemORM) -> PayrollItem:
         raise NotImplementedError  # TODO: adaptix converter

@@ -30,7 +30,9 @@ class Money(ValueObject):
         return Money(value=self.value - other.value)
 
     def __rsub__(self, other: "Money") -> "Money":
-        return other.__sub__(self)
+        if not isinstance(other, Money):
+            return NotImplemented
+        return Money(value=other.value - self.value)
 
     def __mul__(self, factor: Decimal) -> "Money":
         if not isinstance(factor, (Decimal, int)):

@@ -3,7 +3,7 @@ from typing import Final
 from uuid import uuid4
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.position import PositionDTO
+from piaps.application.common.dto.views.position import PositionView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.errors.base import OperationFailedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
@@ -30,7 +30,7 @@ class CreatePositionRequest:
 
 @dto
 class CreatePositionResponse:
-    position: PositionDTO
+    position: PositionView
 
 
 class CreatePosition(Interactor[CreatePositionRequest, CreatePositionResponse]):
@@ -68,7 +68,7 @@ class CreatePosition(Interactor[CreatePositionRequest, CreatePositionResponse]):
         await self._position_repository.add(position)
         await self._uow.commit()
 
-        return CreatePositionResponse(position=PositionDTO.from_domain(position))
+        return CreatePositionResponse(position=PositionView.from_domain(position))
 
     async def _generate_unique_code(self) -> Code:
         for _ in range(self._MAX_CODE_GEN_ATTEMPTS):

@@ -8,7 +8,7 @@ from piaps.domain.enums.payroll_item_type import PayrollItemType
 
 
 @dto
-class PayrollItemDTO:
+class PayrollItemView:
     id: PayrollItemId
     code: str
     name: str

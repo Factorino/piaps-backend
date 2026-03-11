@@ -3,18 +3,15 @@ from datetime import date
 from enum import StrEnum
 from typing import Protocol
 
-from piaps.application.common.query.between import DateBetween
-from piaps.application.common.query.filter import Filter
-from piaps.application.common.query.pagination import (
+from piaps.application.common.dto.query.filter import Filter
+from piaps.application.common.dto.query.pagination import (
     DEFAULT_PAGINATION,
     Pagination,
     PaginationResult,
 )
-from piaps.application.common.query.sort import Sort
-from piaps.domain.entities.department import DepartmentId
+from piaps.application.common.dto.query.sort import Sort
 from piaps.domain.entities.employee import EmployeeId
 from piaps.domain.entities.payroll_sheet import PayrollSheet, PayrollSheetId
-from piaps.domain.enums.payroll_status import PayrollStatus
 
 
 class PayrollSheetFilterField(StrEnum):
@@ -44,25 +41,5 @@ class IPayrollSheetReader(Protocol):
         self,
         filter: Filter[PayrollSheetFilterField] | None = None,
         sort: Sort[PayrollSheetSortField] | None = None,
-        pagination: Pagination | None = DEFAULT_PAGINATION,
-    ) -> PaginationResult[PayrollSheet]: ...
-
-    @abstractmethod
-    async def search_by_employee(
-        self,
-        employee_id: EmployeeId,
-        period: DateBetween | None = None,
-        status: PayrollStatus | None = None,
-        sort: Sort[PayrollSheetSortField] | None = None,
-        pagination: Pagination | None = DEFAULT_PAGINATION,
-    ) -> PaginationResult[PayrollSheet]: ...
-
-    @abstractmethod
-    async def search_by_department(
-        self,
-        department_id: DepartmentId,
-        period: DateBetween | None = None,
-        status: PayrollStatus | None = None,
-        sort: Sort[PayrollSheetSortField] | None = None,
-        pagination: Pagination | None = DEFAULT_PAGINATION,
+        pagination: Pagination = DEFAULT_PAGINATION,
     ) -> PaginationResult[PayrollSheet]: ...

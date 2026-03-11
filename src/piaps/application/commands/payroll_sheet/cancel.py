@@ -1,5 +1,5 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.payroll_sheet import PayrollSheetDTO
+from piaps.application.common.dto.views.payroll_sheet import PayrollSheetView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -19,7 +19,7 @@ class CancelPayrollSheetRequest:
 
 @dto
 class CancelPayrollSheetResponse:
-    payroll_sheet: PayrollSheetDTO
+    payroll_sheet: PayrollSheetView
 
 
 class CancelPayrollSheet(Interactor[CancelPayrollSheetRequest, CancelPayrollSheetResponse]):
@@ -50,7 +50,9 @@ class CancelPayrollSheet(Interactor[CancelPayrollSheetRequest, CancelPayrollShee
         await self._payroll_sheet_repository.update(payroll_sheet)
         await self._uow.commit()
 
-        return CancelPayrollSheetResponse(payroll_sheet=PayrollSheetDTO.from_domain(payroll_sheet))
+        return CancelPayrollSheetResponse(
+            payroll_sheet=PayrollSheetView.from_domain(payroll_sheet)
+        )
 
     def _check_access(self, current_user: User) -> None:
         if current_user.role < UserRole.ACCOUNTANT:

@@ -4,13 +4,13 @@ from typing import ClassVar
 
 from sqlalchemy.orm import InstrumentedAttribute
 
-from piaps.application.common.query.filter import Filter
-from piaps.application.common.query.pagination import (
+from piaps.application.common.dto.query.filter import Filter
+from piaps.application.common.dto.query.pagination import (
     DEFAULT_PAGINATION,
     Pagination,
     PaginationResult,
 )
-from piaps.application.common.query.sort import Sort
+from piaps.application.common.dto.query.sort import Sort
 from piaps.application.interfaces.readers.user import (
     IUserReader,
     UserFilterField,
@@ -53,7 +53,7 @@ class SAUserReader(IUserReader, SAAbstractReader[User, UserORM]):
         self,
         filter: Filter[UserFilterField] | None = None,
         sort: Sort[UserSortField] | None = None,
-        pagination: Pagination | None = DEFAULT_PAGINATION,
+        pagination: Pagination = DEFAULT_PAGINATION,
     ) -> PaginationResult[User]:
         return await self._search(filter, sort, pagination)
 

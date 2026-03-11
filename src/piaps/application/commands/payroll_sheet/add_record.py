@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.payroll_sheet import PayrollSheetDTO
+from piaps.application.common.dto.views.payroll_sheet import PayrollSheetView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -38,7 +38,7 @@ class AddPayrollRecordRequest:
 
 @dto
 class AddPayrollRecordResponse:
-    payroll_sheet: PayrollSheetDTO
+    payroll_sheet: PayrollSheetView
 
 
 class AddPayrollRecord(Interactor[AddPayrollRecordRequest, AddPayrollRecordResponse]):
@@ -102,7 +102,7 @@ class AddPayrollRecord(Interactor[AddPayrollRecordRequest, AddPayrollRecordRespo
         await self._payroll_sheet_repository.update(payroll_sheet)
         await self._uow.commit()
 
-        return AddPayrollRecordResponse(payroll_sheet=PayrollSheetDTO.from_domain(payroll_sheet))
+        return AddPayrollRecordResponse(payroll_sheet=PayrollSheetView.from_domain(payroll_sheet))
 
     async def _resolve_base_salary(self, employee_id: EmployeeId) -> Money:
         employee: Employee | None = await self._employee_reader.find_by_id(employee_id)

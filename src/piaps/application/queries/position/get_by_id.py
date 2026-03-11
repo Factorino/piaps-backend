@@ -1,5 +1,5 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.position import PositionDTO
+from piaps.application.common.dto.views.position import PositionView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -17,7 +17,7 @@ class GetPositionByIdRequest:
 
 @dto
 class GetPositionByIdResponse:
-    user: PositionDTO
+    user: PositionView
 
 
 class GetPositionById(Interactor[GetPositionByIdRequest, GetPositionByIdResponse]):
@@ -37,7 +37,7 @@ class GetPositionById(Interactor[GetPositionByIdRequest, GetPositionByIdResponse
         if position is None:
             raise NotFoundError(f"Position with id '{request.id}' not found")
 
-        return GetPositionByIdResponse(user=PositionDTO.from_domain(position))
+        return GetPositionByIdResponse(user=PositionView.from_domain(position))
 
     def _check_access(self, current_user: User) -> None:
         if current_user.role < UserRole.ACCOUNTANT:

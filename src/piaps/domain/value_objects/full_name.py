@@ -8,7 +8,7 @@ from piaps.domain.value_objects.base import ValueObject, value_object
 @value_object
 class FullName(ValueObject):
     _MAX_LENGTH: ClassVar[int] = 100
-    _NAME_FMT: ClassVar[re.Pattern] = re.compile(r"^[a-zA-Zа-яА-ЯёЁ\-\s]+$")
+    _NAME_FMT: ClassVar[re.Pattern] = re.compile(r"^[a-zA-Zа-яА-ЯёЁ\-]+$")
 
     last_name: str
     first_name: str

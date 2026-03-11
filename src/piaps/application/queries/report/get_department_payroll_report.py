@@ -1,9 +1,12 @@
-from datetime import date
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.query.between import DateBetween
+from piaps.application.common.dto.query.between import DateBetween
+from piaps.application.common.dto.report.department_payroll import (
+    DepartmentEmployeePayrollData,
+    DepartmentPayrollReportData,
+)
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -26,34 +29,9 @@ from piaps.domain.errors.base import NotFoundError
 
 
 if TYPE_CHECKING:
-    from piaps.application.common.query.pagination import PaginationResult
+    from piaps.application.common.dto.query.pagination import PaginationResult
     from piaps.domain.entities.employee import Employee, EmployeeId
     from piaps.domain.entities.position import Position
-
-
-@dto
-class DepartmentEmployeePayrollDTO:
-    employee_code: str
-    employee_full_name: str
-    position_name: str
-    base_salary: Decimal
-    accruals_sum: Decimal
-    deductions_sum: Decimal
-    net_salary: Decimal
-
-
-@dto
-class DepartmentPayrollReportData:
-    department_code: str
-    department_name: str
-    period_from: date | None
-    period_to: date | None
-    employees: list[DepartmentEmployeePayrollDTO]
-    total_base_salary: Decimal
-    total_accruals: Decimal
-    total_deductions: Decimal
-    total_net_salary: Decimal
-    employee_count: int
 
 
 @dto
@@ -143,7 +121,7 @@ class GetDepartmentPayrollReport(
             employee_totals[sheet.employee_id]["deductions"] += sheet.deductions_sum.value
             employee_totals[sheet.employee_id]["net_salary"] += sheet.net_salary.value
 
-        employees_dto: list[DepartmentEmployeePayrollDTO] = []
+        employees_dto: list[DepartmentEmployeePayrollData] = []
         total_base_salary = Decimal(0)
         total_accruals = Decimal(0)
         total_deductions = Decimal(0)
@@ -160,7 +138,7 @@ class GetDepartmentPayrollReport(
             if position is None:
                 continue
 
-            employee_dto = DepartmentEmployeePayrollDTO(
+            employee_dto = DepartmentEmployeePayrollData(
                 employee_code=employee.code.value,
                 employee_full_name=employee.full_name.full,
                 position_name=position.name.value,

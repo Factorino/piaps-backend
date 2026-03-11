@@ -1,14 +1,14 @@
 from typing import TYPE_CHECKING
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.payroll_sheet import PayrollSheetDTO
-from piaps.application.common.query.filter import Filter
-from piaps.application.common.query.pagination import (
+from piaps.application.common.dto.query.filter import Filter
+from piaps.application.common.dto.query.pagination import (
     DEFAULT_PAGINATION,
     Pagination,
     PaginationResult,
 )
-from piaps.application.common.query.sort import Sort
+from piaps.application.common.dto.query.sort import Sort
+from piaps.application.common.dto.views.payroll_sheet import PayrollSheetView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -34,7 +34,7 @@ class SearchPayrollSheetsRequest:
 
 @dto
 class SearchPayrollSheetsResponse:
-    result: PaginationResult[PayrollSheetDTO]
+    result: PaginationResult[PayrollSheetView]
 
 
 class SearchPayrollSheets(Interactor[SearchPayrollSheetsRequest, SearchPayrollSheetsResponse]):
@@ -56,7 +56,9 @@ class SearchPayrollSheets(Interactor[SearchPayrollSheetsRequest, SearchPayrollSh
             pagination=request.pagination,
         )
 
-        data: list[PayrollSheetDTO] = [PayrollSheetDTO.from_domain(sheet) for sheet in result.data]
+        data: list[PayrollSheetView] = [
+            PayrollSheetView.from_domain(sheet) for sheet in result.data
+        ]
         return SearchPayrollSheetsResponse(result=PaginationResult(data=data, meta=result.meta))
 
     def _check_access(self, current_user: User) -> None:

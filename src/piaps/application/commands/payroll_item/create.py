@@ -3,7 +3,7 @@ from typing import Final
 from uuid import uuid4
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.payroll_item import PayrollItemDTO
+from piaps.application.common.dto.views.payroll_item import PayrollItemView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.errors.base import OperationFailedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
@@ -32,7 +32,7 @@ class CreatePayrollItemRequest:
 
 @dto
 class CreatePayrollItemResponse:
-    payroll_item: PayrollItemDTO
+    payroll_item: PayrollItemView
 
 
 class CreatePayrollItem(Interactor[CreatePayrollItemRequest, CreatePayrollItemResponse]):
@@ -71,7 +71,7 @@ class CreatePayrollItem(Interactor[CreatePayrollItemRequest, CreatePayrollItemRe
         await self._payroll_item_repository.add(payroll_item)
         await self._uow.commit()
 
-        return CreatePayrollItemResponse(payroll_item=PayrollItemDTO.from_domain(payroll_item))
+        return CreatePayrollItemResponse(payroll_item=PayrollItemView.from_domain(payroll_item))
 
     async def _generate_unique_code(self) -> Code:
         for _ in range(self._MAX_CODE_GEN_ATTEMPTS):

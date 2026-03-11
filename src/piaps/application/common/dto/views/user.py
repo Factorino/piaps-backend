@@ -6,7 +6,7 @@ from piaps.domain.enums.user_role import UserRole
 
 
 @dto
-class UserDTO:
+class UserView:
     id: UserId
     username: str
     role: UserRole

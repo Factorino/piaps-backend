@@ -6,7 +6,7 @@ from piaps.domain.entities.position import Position, PositionId
 
 
 @dto
-class PositionDTO:
+class PositionView:
     id: PositionId
     code: str
     name: str

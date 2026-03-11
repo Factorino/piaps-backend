@@ -1,5 +1,5 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.user import UserDTO
+from piaps.application.common.dto.views.user import UserView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.auth.password_hasher import IPasswordHasher
@@ -22,7 +22,7 @@ class ChangePasswordRequest:
 
 @dto
 class ChangePasswordResponse:
-    user: UserDTO
+    user: UserView
 
 
 class ChangePassword(Interactor[ChangePasswordRequest, ChangePasswordResponse]):
@@ -53,13 +53,13 @@ class ChangePassword(Interactor[ChangePasswordRequest, ChangePasswordResponse]):
 
         password = Password(value=request.new_password)
         password_hash: bytes = self._password_hasher.hash_password(password)
-        
+
         user.password_hash = password_hash
 
         await self._user_repository.update(user)
         await self._uow.commit()
 
-        return ChangePasswordResponse(user=UserDTO.from_domain(user))
+        return ChangePasswordResponse(user=UserView.from_domain(user))
 
     def _check_access(self, current_user: User, request: ChangePasswordRequest) -> None:
         is_self: bool = current_user.id == request.id

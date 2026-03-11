@@ -1,5 +1,5 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.employee import EmployeeDTO
+from piaps.application.common.dto.views.employee import EmployeeView
 from piaps.application.common.not_set import NOTSET, NotSet, is_set
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
@@ -28,7 +28,7 @@ class UpdateEmployeeRequest:
 
 @dto
 class UpdateEmployeeResponse:
-    employee: EmployeeDTO
+    employee: EmployeeView
 
 
 class UpdateEmployee(Interactor[UpdateEmployeeRequest, UpdateEmployeeResponse]):
@@ -61,7 +61,7 @@ class UpdateEmployee(Interactor[UpdateEmployeeRequest, UpdateEmployeeResponse]):
         await self._employee_repository.update(employee)
         await self._uow.commit()
 
-        return UpdateEmployeeResponse(employee=EmployeeDTO.from_domain(employee))
+        return UpdateEmployeeResponse(employee=EmployeeView.from_domain(employee))
 
     def _build_full_name(self, entity: Employee, request: UpdateEmployeeRequest) -> FullName:
         last_name: str = entity.full_name.last_name

@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.user import UserDTO
+from piaps.application.common.dto.views.user import UserView
 from piaps.application.interfaces.auth.password_hasher import IPasswordHasher
 from piaps.application.interfaces.common.interactor import Interactor
 from piaps.application.interfaces.common.transaction_manager import ITransactionManager
@@ -21,7 +21,7 @@ class RegisterUserRequest:
 
 @dto
 class RegisterUserResponse:
-    user: UserDTO
+    user: UserView
 
 
 class RegisterUser(Interactor[RegisterUserRequest, RegisterUserResponse]):
@@ -51,7 +51,7 @@ class RegisterUser(Interactor[RegisterUserRequest, RegisterUserResponse]):
         await self._user_repository.add(user)
         await self._uow.commit()
 
-        return RegisterUserResponse(user=UserDTO.from_domain(user))
+        return RegisterUserResponse(user=UserView.from_domain(user))
 
     async def _check_unique(self, user: User) -> None:
         existing: User | None = await self._user_reader.find_by_username(user.username)

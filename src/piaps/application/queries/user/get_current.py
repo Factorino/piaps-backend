@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.user import UserDTO
+from piaps.application.common.dto.views.user import UserView
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 @dto
 class GetCurrentUserResponse:
-    user: UserDTO
+    user: UserView
 
 
 class GetCurrentUser(Interactor[None, GetCurrentUserResponse]):
@@ -24,4 +24,4 @@ class GetCurrentUser(Interactor[None, GetCurrentUserResponse]):
 
     async def execute(self, request: None = None) -> GetCurrentUserResponse:  # noqa: ARG002
         current_user: User = await self._idp.get_user()
-        return GetCurrentUserResponse(user=UserDTO.from_domain(current_user))
+        return GetCurrentUserResponse(user=UserView.from_domain(current_user))

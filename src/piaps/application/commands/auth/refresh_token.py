@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.user import UserDTO
+from piaps.application.common.dto.views.user import UserView
 from piaps.application.errors.auth import AuthenticationError, InvalidTokenError
 from piaps.application.interfaces.auth.jwt_provider import (
     IJWTProvider,
@@ -27,7 +27,7 @@ class RefreshTokenResponse:
     access_token: str
     refresh_token: str
     token_type: str = "Bearer"  # noqa: S105
-    user: UserDTO
+    user: UserView
 
 
 class RefreshToken(Interactor[RefreshTokenRequest, RefreshTokenResponse]):
@@ -56,5 +56,5 @@ class RefreshToken(Interactor[RefreshTokenRequest, RefreshTokenResponse]):
         return RefreshTokenResponse(
             access_token=access_token,
             refresh_token=refresh_token,
-            user=UserDTO.from_domain(user),
+            user=UserView.from_domain(user),
         )

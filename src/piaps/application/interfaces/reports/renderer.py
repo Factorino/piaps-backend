@@ -14,7 +14,6 @@ class ReportTemplate(StrEnum):
 class ReportFormat(StrEnum):
     PDF = "pdf"
     EXCEL = "excel"
-    CSV = "csv"
 
 
 @dto

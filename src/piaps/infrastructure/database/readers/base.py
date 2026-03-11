@@ -11,20 +11,20 @@ from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql import operators
 from sqlalchemy.sql.operators import OperatorType
 
-from piaps.application.common.query.filter import (
+from piaps.application.common.dto.query.filter import (
     Filter,
     OperatorList,
     OperatorNull,
     OperatorScalar,
     OperatorStr,
 )
-from piaps.application.common.query.pagination import (
+from piaps.application.common.dto.query.pagination import (
     DEFAULT_PAGINATION,
     Pagination,
     PaginationResult,
     PaginationResultMeta,
 )
-from piaps.application.common.query.sort import Sort, SortDirection
+from piaps.application.common.dto.query.sort import Sort, SortDirection
 from piaps.application.errors.base import OperationFailedError
 from piaps.domain.entities.base import Entity
 from piaps.infrastructure.database.models.base import BaseORM

@@ -1,5 +1,5 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.user import UserDTO
+from piaps.application.common.dto.views.user import UserView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -19,7 +19,7 @@ class ChangeUserRoleRequest:
 
 @dto
 class ChangeUserRoleResponse:
-    user: UserDTO
+    user: UserView
 
 
 class ChangeUserRole(Interactor[ChangeUserRoleRequest, ChangeUserRoleResponse]):
@@ -48,7 +48,7 @@ class ChangeUserRole(Interactor[ChangeUserRoleRequest, ChangeUserRoleResponse]):
         await self._user_repository.update(user)
         await self._uow.commit()
 
-        return ChangeUserRoleResponse(user=UserDTO.from_domain(user))
+        return ChangeUserRoleResponse(user=UserView.from_domain(user))
 
     def _check_access(self, current_user: User, target_user_id: UserId) -> None:
         if current_user.id == target_user_id:

@@ -3,7 +3,7 @@ from typing import Final
 from uuid import uuid4
 
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.employee import EmployeeDTO
+from piaps.application.common.dto.views.employee import EmployeeView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.errors.base import OperationFailedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
@@ -33,7 +33,7 @@ class CreateEmployeeRequest:
 
 @dto
 class CreateEmployeeResponse:
-    employee: EmployeeDTO
+    employee: EmployeeView
 
 
 class CreateEmployee(Interactor[CreateEmployeeRequest, CreateEmployeeResponse]):
@@ -76,7 +76,7 @@ class CreateEmployee(Interactor[CreateEmployeeRequest, CreateEmployeeResponse]):
         await self._employee_repository.add(employee)
         await self._uow.commit()
 
-        return CreateEmployeeResponse(employee=EmployeeDTO.from_domain(employee))
+        return CreateEmployeeResponse(employee=EmployeeView.from_domain(employee))
 
     async def _generate_unique_code(self) -> Code:
         for _ in range(self._MAX_CODE_GEN_ATTEMPTS):

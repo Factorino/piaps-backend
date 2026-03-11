@@ -1,12 +1,12 @@
 from piaps.application.common.dto.base import dto
-from piaps.application.common.dto.user import UserDTO
-from piaps.application.common.query.filter import Filter
-from piaps.application.common.query.pagination import (
+from piaps.application.common.dto.query.filter import Filter
+from piaps.application.common.dto.query.pagination import (
     DEFAULT_PAGINATION,
     Pagination,
     PaginationResult,
 )
-from piaps.application.common.query.sort import Sort
+from piaps.application.common.dto.query.sort import Sort
+from piaps.application.common.dto.views.user import UserView
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
 from piaps.application.interfaces.common.interactor import Interactor
@@ -24,7 +24,7 @@ class SearchUsersRequest:
 
 @dto
 class SearchUsersResponse:
-    result: PaginationResult[UserDTO]
+    result: PaginationResult[UserView]
 
 
 class SearchUsers(Interactor[SearchUsersRequest, SearchUsersResponse]):
@@ -46,7 +46,7 @@ class SearchUsers(Interactor[SearchUsersRequest, SearchUsersResponse]):
             pagination=request.pagination,
         )
 
-        data: list[UserDTO] = [UserDTO.from_domain(user) for user in result.data]
+        data: list[UserView] = [UserView.from_domain(user) for user in result.data]
         return SearchUsersResponse(result=PaginationResult(data=data, meta=result.meta))
 
     def _check_access(self, current_user: User) -> None:
