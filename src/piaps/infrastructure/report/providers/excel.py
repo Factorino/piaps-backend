@@ -28,7 +28,7 @@ class ExcelReportProvider(IReportProvider):
         output = BytesIO()
         writer.save(output)
         excel_bytes: bytes = output.getvalue()
-        if not bytes:
+        if not excel_bytes:
             raise OperationFailedError("Error occured while render Excel report")
 
         return ReportDocument(

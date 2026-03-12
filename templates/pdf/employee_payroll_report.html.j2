@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; font-size: 12px; color: #1a1a1a; padding: 24px; }
+  h1 { font-size: 16px; margin-bottom: 4px; }
+  .subtitle { color: #555; margin-bottom: 20px; font-size: 12px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; margin-bottom: 24px; background: #f5f5f5; padding: 12px; border-radius: 4px; }
+  .info-grid span { color: #555; }
+  .info-grid strong { color: #1a1a1a; }
+  .period-block { margin-bottom: 24px; }
+  .period-title { font-size: 13px; font-weight: bold; background: #e8f0fe; padding: 6px 10px; border-left: 3px solid #3b5bdb; margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+  th { background: #f0f0f0; text-align: left; padding: 6px 8px; border-bottom: 2px solid #ccc; font-size: 11px; text-transform: uppercase; color: #444; }
+  td { padding: 6px 8px; border-bottom: 1px solid #e5e5e5; }
+  tr:last-child td { border-bottom: none; }
+  .type-accrual { color: #2b7a2b; }
+  .type-deduction { color: #c0392b; }
+  .amount { text-align: right; font-variant-numeric: tabular-nums; }
+  .sheet-totals { display: flex; gap: 24px; justify-content: flex-end; font-size: 12px; padding: 6px 8px; background: #fafafa; border: 1px solid #e5e5e5; border-radius: 2px; }
+  .sheet-totals .net { font-weight: bold; color: #1a1a1a; }
+  .grand-totals { margin-top: 24px; border-top: 2px solid #1a1a1a; padding-top: 12px; display: flex; gap: 32px; justify-content: flex-end; font-size: 13px; }
+  .grand-totals div { text-align: right; }
+  .grand-totals .label { color: #555; font-size: 11px; }
+  .grand-totals .value { font-weight: bold; font-size: 14px; }
+  .grand-totals .net .value { color: #3b5bdb; }
+  @media print { body { padding: 0; } }
+</style>
+</head>
+<body>
+
+<h1>Расчётный лист</h1>
+<div class="subtitle">{{ employee_full_name }} — {{ position_name }}, {{ department_name }}</div>
+
+<div class="info-grid">
+  <span>Табельный номер:</span><strong>{{ employee_code }}</strong>
+  <span>Должность:</span><strong>{{ position_name }}</strong>
+  <span>Подразделение:</span><strong>{{ department_name }}</strong>
+  <span>Оклад:</span><strong>{{ "%.2f"|format(base_salary|float) }} ₽</strong>
+</div>
+
+{% for sheet in sheets %}
+<div class="period-block">
+  <div class="period-title">{{ sheet.period | string | truncate(7, true, '') }}</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Код</th>
+        <th>Наименование</th>
+        <th>Тип</th>
+        <th class="amount">Сумма</th>
+        <th>Комментарий</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for rec in sheet.records %}
+      <tr>
+        <td>{{ rec.payroll_item_code }}</td>
+        <td>{{ rec.payroll_item_name }}</td>
+        <td class="{% if rec.payroll_type == 'ACCRUAL' %}type-accrual{% else %}type-deduction{% endif %}">
+          {% if rec.payroll_type == 'ACCRUAL' %}Начисление{% else %}Удержание{% endif %}
+        </td>
+        <td class="amount">{{ "%.2f"|format(rec.amount|float) }} ₽</td>
+        <td>{{ rec.comment or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="sheet-totals">
+    <span>Начислено: <strong class="type-accrual">{{ "%.2f"|format(sheet.accruals_sum|float) }} ₽</strong></span>
+    <span>Удержано: <strong class="type-deduction">{{ "%.2f"|format(sheet.deductions_sum|float) }} ₽</strong></span>
+    <span class="net">К выплате: {{ "%.2f"|format(sheet.net_salary|float) }} ₽</span>
+  </div>
+</div>
+{% endfor %}
+
+<div class="grand-totals">
+  <div>
+    <div class="label">Итого начислено</div>
+    <div class="value type-accrual">{{ "%.2f"|format(total_accruals|float) }} ₽</div>
+  </div>
+  <div>
+    <div class="label">Итого удержано</div>
+    <div class="value type-deduction">{{ "%.2f"|format(total_deductions|float) }} ₽</div>
+  </div>
+  <div class="net">
+    <div class="label">Итого к выплате</div>
+    <div class="value">{{ "%.2f"|format(total_net_salary|float) }} ₽</div>
+  </div>
+</div>
+
+</body>
+</html>

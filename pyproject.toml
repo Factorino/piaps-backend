@@ -28,6 +28,7 @@ dependencies = [
     "alembic>=1.18.4",
     "bcrypt>=5.0.0",
     "dishka>=1.8.0",
+    "djlint>=1.36.4",
     "fastapi[python-multipart]>=0.135.1",
     "jinja2>=3.1.6",
     "pyjwt[crypto]>=2.11.0",

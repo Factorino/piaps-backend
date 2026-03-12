@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; font-size: 12px; color: #1a1a1a; padding: 24px; }
+  h1 { font-size: 16px; margin-bottom: 20px; }
+  .period-bar { display: flex; gap: 32px; margin-bottom: 24px; background: #f5f5f5; padding: 12px; border-radius: 4px; }
+  .period-bar div .label { color: #555; font-size: 11px; }
+  .period-bar div .value { font-weight: bold; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+  th { background: #f0f0f0; text-align: left; padding: 7px 8px; border-bottom: 2px solid #ccc; font-size: 11px; text-transform: uppercase; color: #444; }
+  td { padding: 7px 8px; border-bottom: 1px solid #e5e5e5; }
+  tr:hover td { background: #fafafa; }
+  .amount { text-align: right; font-variant-numeric: tabular-nums; }
+  .center { text-align: center; }
+  .accrual { color: #2b7a2b; }
+  .deduction { color: #c0392b; }
+  tfoot td { font-weight: bold; background: #f0f0f0; border-top: 2px solid #ccc; }
+  .totals-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .total-card { background: #f5f5f5; border-radius: 6px; padding: 14px 16px; }
+  .total-card .label { font-size: 11px; color: #555; margin-bottom: 4px; }
+  .total-card .value { font-size: 20px; font-weight: bold; }
+  .total-card.accrual .value { color: #2b7a2b; }
+  .total-card.deduction .value { color: #c0392b; }
+  .total-card.net .value { color: #3b5bdb; }
+  @page { size: A4 landscape; margin: 16mm; }
+  @media print { body { padding: 0; } }
+</style>
+</head>
+<body>
+
+<h1>Сводный отчёт по фонду оплаты труда</h1>
+
+<div class="period-bar">
+  <div>
+    <div class="label">Период с</div>
+    <div class="value">{{ period_from or '—' }}</div>
+  </div>
+  <div>
+    <div class="label">Период по</div>
+    <div class="value">{{ period_to or '—' }}</div>
+  </div>
+  <div>
+    <div class="label">Всего сотрудников</div>
+    <div class="value">{{ total_employee_count }}</div>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Код</th>
+      <th>Подразделение</th>
+      <th class="center">Сотрудников</th>
+      <th class="amount">Оклад (сумм.)</th>
+      <th class="amount">Начислено</th>
+      <th class="amount">Удержано</th>
+      <th class="amount">К выплате</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for dept in departments %}
+    <tr>
+      <td>{{ dept.department_code }}</td>
+      <td>{{ dept.department_name }}</td>
+      <td class="center">{{ dept.employee_count }}</td>
+      <td class="amount">{{ "%.2f"|format(dept.total_base_salary|float) }} ₽</td>
+      <td class="amount accrual">{{ "%.2f"|format(dept.total_accruals|float) }} ₽</td>
+      <td class="amount deduction">{{ "%.2f"|format(dept.total_deductions|float) }} ₽</td>
+      <td class="amount"><strong>{{ "%.2f"|format(dept.total_net_salary|float) }} ₽</strong></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="2">Итого</td>
+      <td class="center">{{ total_employee_count }}</td>
+      <td class="amount">{{ "%.2f"|format(grand_total_base_salary|float) }} ₽</td>
+      <td class="amount accrual">{{ "%.2f"|format(grand_total_accruals|float) }} ₽</td>
+      <td class="amount deduction">{{ "%.2f"|format(grand_total_deductions|float) }} ₽</td>
+      <td class="amount">{{ "%.2f"|format(grand_total_net_salary|float) }} ₽</td>
+    </tr>
+  </tfoot>
+</table>
+
+<div class="totals-grid">
+  <div class="total-card">
+    <div class="label">Фонд оплаты (оклады)</div>
+    <div class="value">{{ "%.2f"|format(grand_total_base_salary|float) }} ₽</div>
+  </div>
+  <div class="total-card accrual">
+    <div class="label">Итого начислено</div>
+    <div class="value">{{ "%.2f"|format(grand_total_accruals|float) }} ₽</div>
+  </div>
+  <div class="total-card deduction">
+    <div class="label">Итого удержано</div>
+    <div class="value">{{ "%.2f"|format(grand_total_deductions|float) }} ₽</div>
+  </div>
+  <div class="total-card net">
+    <div class="label">Итого к выплате</div>
+    <div class="value">{{ "%.2f"|format(grand_total_net_salary|float) }} ₽</div>
+  </div>
+</div>
+
+</body>
+</html>

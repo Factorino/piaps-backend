@@ -30,7 +30,7 @@ class PdfReportProvider(IReportProvider):
         html_str: str = await template.render_async(**data)
 
         pdf_bytes: bytes | None = HTML(string=html_str).write_pdf()
-        if not bytes:
+        if not pdf_bytes:
             raise OperationFailedError("Error occured while render PDF report")
 
         return ReportDocument(
