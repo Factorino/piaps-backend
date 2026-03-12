@@ -1,0 +1,39 @@
+[api]
+host = "0.0.0.0"
+port = 8000
+workers = 4
+debug = false
+# Possible values: "development", "production", "testing"
+environment = "development"
+
+[api.cors]
+allow_origins = ["*"]
+allow_credentials = false
+allow_methods = ["*"]
+allow_headers = ["*"]
+# Max preflight cache time in seconds
+max_age = 600
+
+[database]
+# SQLite (default)
+db_path = "data/app_db.sqlite"
+driver = "sqlite+aiosqlite"
+
+# PostgreSQL (uncomment and fill in to switch)
+# host = "localhost"
+# port = 5432
+# user = "postgres"
+# db_name = "app_db"
+# driver = "postgresql+psycopg3"
+
+[jwt]
+algorithm = "RS256"
+private_key_path = "secrets/private.pem"
+public_key_path = "secrets/public.pem"
+# Access token TTL in minutes
+access_ttl_minutes = 15
+# Refresh token TTL in minutes (default: 7 days)
+refresh_ttl_minutes = 10080
+
+[renderer]
+templates_dir = "templates"

@@ -1,3 +1,4 @@
+import asyncio
 from io import BytesIO
 from pathlib import Path
 from typing import Any, Final
@@ -23,7 +24,7 @@ class ExcelReportProvider(IReportProvider):
         template_path: Path = self._templates_dir / f"{template_name.value}.xlsx"
 
         writer = BookWriter(str(template_path))
-        writer.render_book(data)
+        await asyncio.to_thread(writer.render_book, data)
 
         output = BytesIO()
         writer.save(output)

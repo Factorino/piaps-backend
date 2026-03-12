@@ -69,7 +69,7 @@ def _get_error_type(exception: Exception) -> str:
 
 
 def _get_error_message(exception: Exception) -> str:
-    return str(exception) if exception.args else "Unexpected error"
+    return str(exception) if exception.args else f"{type(exception).__name__}: no message provided"
 
 
 async def app_error_handler(_request: Request, exception: Exception) -> JSONResponse:

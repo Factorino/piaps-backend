@@ -157,6 +157,9 @@ ENV/
 env.bak/
 venv.bak/
 *.exe
+configs/configs.toml
+configs/secrets.toml
+certs/
 
 # Spyder project settings
 .spyderproject
