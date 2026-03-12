@@ -1,9 +1,16 @@
 import calendar
 from datetime import date
-from typing import Any, Protocol, Self, runtime_checkable
+from typing import Any, Protocol, Self
 
 from piaps.application.common.dto.base import dto
 from piaps.domain.errors.base import ValidationError
+
+
+class _SupportsOrdering(Protocol):
+    def __lt__(self, *args: Any, **kwargs: Any) -> bool: ...
+    def __le__(self, *args: Any, **kwargs: Any) -> bool: ...
+    def __gt__(self, *args: Any, **kwargs: Any) -> bool: ...
+    def __ge__(self, *args: Any, **kwargs: Any) -> bool: ...
 
 
 @dto
@@ -43,11 +50,3 @@ class DateBetween(Between[date]):
             value_from=date(year, month, 1),
             value_to=date(year, month, last_day),
         )
-
-
-@runtime_checkable
-class _SupportsOrdering(Protocol):
-    def __lt__(self, *args: Any, **kwargs: Any) -> bool: ...
-    def __le__(self, *args: Any, **kwargs: Any) -> bool: ...
-    def __gt__(self, *args: Any, **kwargs: Any) -> bool: ...
-    def __ge__(self, *args: Any, **kwargs: Any) -> bool: ...

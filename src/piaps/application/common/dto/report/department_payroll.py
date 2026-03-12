@@ -5,7 +5,7 @@ from piaps.application.common.dto.base import dto
 
 
 @dto
-class DepartmentEmployeePayrollData:
+class EmployeePayrollData:
     employee_code: str
     employee_full_name: str
     position_name: str
@@ -21,7 +21,7 @@ class DepartmentPayrollReportData:
     department_name: str
     period_from: date | None
     period_to: date | None
-    employees: list[DepartmentEmployeePayrollData]
+    employees: list[EmployeePayrollData]
     total_base_salary: Decimal
     total_accruals: Decimal
     total_deductions: Decimal

@@ -28,7 +28,6 @@ class EmployeeORM(BaseORM):
     full_name: Mapped[str] = mapped_column(
         String(300),
         nullable=False,
-        unique=True,
     )
 
     hire_date: Mapped[date] = mapped_column(

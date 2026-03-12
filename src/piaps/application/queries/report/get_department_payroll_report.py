@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 from piaps.application.common.dto.base import dto
 from piaps.application.common.dto.query.between import DateBetween
 from piaps.application.common.dto.report.department_payroll import (
-    DepartmentEmployeePayrollData,
     DepartmentPayrollReportData,
+    EmployeePayrollData,
 )
 from piaps.application.errors.auth import AccessDeniedError
 from piaps.application.interfaces.auth.identity_provider import IIdentityProvider
@@ -121,7 +121,7 @@ class GetDepartmentPayrollReport(
             employee_totals[sheet.employee_id]["deductions"] += sheet.deductions_sum.value
             employee_totals[sheet.employee_id]["net_salary"] += sheet.net_salary.value
 
-        employees_dto: list[DepartmentEmployeePayrollData] = []
+        employees_dto: list[EmployeePayrollData] = []
         total_base_salary = Decimal(0)
         total_accruals = Decimal(0)
         total_deductions = Decimal(0)
@@ -138,7 +138,7 @@ class GetDepartmentPayrollReport(
             if position is None:
                 continue
 
-            employee_dto = DepartmentEmployeePayrollData(
+            employee_dto = EmployeePayrollData(
                 employee_code=employee.code.value,
                 employee_full_name=employee.full_name.full,
                 position_name=position.name.value,

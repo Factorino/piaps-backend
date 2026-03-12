@@ -16,6 +16,7 @@ class IPayrollReportReader(Protocol):
         self,
         employee_id: EmployeeId,
         period: DateBetween,
+        status: PayrollStatus | None = None,
     ) -> EmployeePayrollReportData: ...
 
     @abstractmethod
