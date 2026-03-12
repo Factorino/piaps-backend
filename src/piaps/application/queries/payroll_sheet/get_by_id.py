@@ -19,7 +19,7 @@ class GetPayrollSheetByIdResponse:
     payroll_sheet: PayrollSheetView
 
 
-class GetPayrollByIdSheet(Interactor[GetPayrollSheetByIdRequest, GetPayrollSheetByIdResponse]):
+class GetPayrollSheetById(Interactor[GetPayrollSheetByIdRequest, GetPayrollSheetByIdResponse]):
     def __init__(
         self,
         payroll_sheet_reader: IPayrollSheetReader,

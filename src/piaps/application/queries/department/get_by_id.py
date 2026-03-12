@@ -17,7 +17,7 @@ class GetDepartmentByIdRequest:
 
 @dto
 class GetDepartmentByIdResponse:
-    user: DepartmentView
+    department: DepartmentView
 
 
 class GetDepartmentById(Interactor[GetDepartmentByIdRequest, GetDepartmentByIdResponse]):
@@ -37,7 +37,7 @@ class GetDepartmentById(Interactor[GetDepartmentByIdRequest, GetDepartmentByIdRe
         if department is None:
             raise NotFoundError(f"Department with id '{request.id}' not found")
 
-        return GetDepartmentByIdResponse(user=DepartmentView.from_domain(department))
+        return GetDepartmentByIdResponse(department=DepartmentView.from_domain(department))
 
     def _check_access(self, current_user: User) -> None:
         if current_user.role < UserRole.ACCOUNTANT:

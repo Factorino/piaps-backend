@@ -17,13 +17,18 @@ from piaps.domain.value_objects.full_name import FullName
 
 
 @dto
-class UpdateEmployeeRequest:
-    id: EmployeeId
+class UpdateEmployeeBody:
     last_name: str | NotSet = NOTSET
     first_name: str | NotSet = NOTSET
     middle_name: str | None | NotSet = NOTSET
     department_id: DepartmentId | NotSet = NOTSET
     position_id: PositionId | NotSet = NOTSET
+
+
+@dto
+class UpdateEmployeeRequest:
+    id: EmployeeId
+    body: UpdateEmployeeBody
 
 
 @dto
@@ -53,10 +58,10 @@ class UpdateEmployee(Interactor[UpdateEmployeeRequest, UpdateEmployeeResponse]):
             raise NotFoundError(f"Employee with id '{request.id}' not found")
 
         employee.full_name = self._build_full_name(employee, request)
-        if is_set(request.department_id):
-            employee.department_id = request.department_id
-        if is_set(request.position_id):
-            employee.position_id = request.position_id
+        if is_set(request.body.department_id):
+            employee.department_id = request.body.department_id
+        if is_set(request.body.position_id):
+            employee.position_id = request.body.position_id
 
         await self._employee_repository.update(employee)
         await self._uow.commit()
@@ -65,16 +70,16 @@ class UpdateEmployee(Interactor[UpdateEmployeeRequest, UpdateEmployeeResponse]):
 
     def _build_full_name(self, entity: Employee, request: UpdateEmployeeRequest) -> FullName:
         last_name: str = entity.full_name.last_name
-        if is_set(request.last_name):
-            last_name = request.last_name
+        if is_set(request.body.last_name):
+            last_name = request.body.last_name
 
         first_name: str = entity.full_name.first_name
-        if is_set(request.first_name):
-            first_name = request.first_name
+        if is_set(request.body.first_name):
+            first_name = request.body.first_name
 
         middle_name: str | None = entity.full_name.middle_name
-        if is_set(request.middle_name):
-            middle_name = request.middle_name
+        if is_set(request.body.middle_name):
+            middle_name = request.body.middle_name
 
         return FullName(last_name=last_name, first_name=first_name, middle_name=middle_name)
 

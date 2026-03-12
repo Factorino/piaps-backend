@@ -17,7 +17,7 @@ class GetPositionByIdRequest:
 
 @dto
 class GetPositionByIdResponse:
-    user: PositionView
+    position: PositionView
 
 
 class GetPositionById(Interactor[GetPositionByIdRequest, GetPositionByIdResponse]):
@@ -37,7 +37,7 @@ class GetPositionById(Interactor[GetPositionByIdRequest, GetPositionByIdResponse
         if position is None:
             raise NotFoundError(f"Position with id '{request.id}' not found")
 
-        return GetPositionByIdResponse(user=PositionView.from_domain(position))
+        return GetPositionByIdResponse(position=PositionView.from_domain(position))
 
     def _check_access(self, current_user: User) -> None:
         if current_user.role < UserRole.ACCOUNTANT:

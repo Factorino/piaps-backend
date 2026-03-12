@@ -17,7 +17,7 @@ class GetPayrollItemByIdRequest:
 
 @dto
 class GetPayrollItemByIdResponse:
-    user: PayrollItemView
+    payroll_item: PayrollItemView
 
 
 class GetPayrollItemById(Interactor[GetPayrollItemByIdRequest, GetPayrollItemByIdResponse]):
@@ -37,7 +37,7 @@ class GetPayrollItemById(Interactor[GetPayrollItemByIdRequest, GetPayrollItemByI
         if payroll_item is None:
             raise NotFoundError(f"Payroll item with id '{request.id}' not found")
 
-        return GetPayrollItemByIdResponse(user=PayrollItemView.from_domain(payroll_item))
+        return GetPayrollItemByIdResponse(payroll_item=PayrollItemView.from_domain(payroll_item))
 
     def _check_access(self, current_user: User) -> None:
         if current_user.role < UserRole.ACCOUNTANT:

@@ -17,7 +17,7 @@ class GetEmployeeByIdRequest:
 
 @dto
 class GetEmployeeByIdResponse:
-    user: EmployeeView
+    employee: EmployeeView
 
 
 class GetEmployeeById(Interactor[GetEmployeeByIdRequest, GetEmployeeByIdResponse]):
@@ -37,7 +37,7 @@ class GetEmployeeById(Interactor[GetEmployeeByIdRequest, GetEmployeeByIdResponse
         if employee is None:
             raise NotFoundError(f"Employee with id '{request.id}' not found")
 
-        return GetEmployeeByIdResponse(user=EmployeeView.from_domain(employee))
+        return GetEmployeeByIdResponse(employee=EmployeeView.from_domain(employee))
 
     def _check_access(self, current_user: User) -> None:
         if current_user.role < UserRole.ACCOUNTANT:

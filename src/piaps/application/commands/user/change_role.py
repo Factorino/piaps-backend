@@ -12,9 +12,14 @@ from piaps.domain.errors.base import NotFoundError
 
 
 @dto
+class ChangeUserRoleBody:
+    role: UserRole
+
+
+@dto
 class ChangeUserRoleRequest:
     id: UserId
-    role: UserRole
+    body: ChangeUserRoleBody
 
 
 @dto
@@ -43,7 +48,7 @@ class ChangeUserRole(Interactor[ChangeUserRoleRequest, ChangeUserRoleResponse]):
         if user is None:
             raise NotFoundError(f"User with id '{request.id}' not found")
 
-        user.role = request.role
+        user.role = request.body.role
 
         await self._user_repository.update(user)
         await self._uow.commit()

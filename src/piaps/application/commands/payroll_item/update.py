@@ -19,12 +19,17 @@ from piaps.domain.value_objects.name import Name
 
 
 @dto
-class UpdatePayrollItemRequest:
-    id: PayrollItemId
+class UpdatePayrollItemBody:
     name: str | NotSet = NOTSET
     payroll_type: PayrollItemType | NotSet = NOTSET
     calc_type: PayrollCalculationType | NotSet = NOTSET
     value: Decimal | None | NotSet = NOTSET
+
+
+@dto
+class UpdatePayrollItemRequest:
+    id: PayrollItemId
+    body: UpdatePayrollItemBody
 
 
 @dto
@@ -53,14 +58,14 @@ class UpdatePayrollItem(Interactor[UpdatePayrollItemRequest, UpdatePayrollItemRe
         if payroll_item is None:
             raise NotFoundError(f"Payroll item with id '{request.id}' not found")
 
-        if is_set(request.name):
-            payroll_item.name = Name(value=request.name)
-        if is_set(request.payroll_type):
-            payroll_item.payroll_type = request.payroll_type
-        if is_set(request.calc_type):
-            payroll_item.calc_type = request.calc_type
-        if is_set(request.value):
-            payroll_item.value = request.value
+        if is_set(request.body.name):
+            payroll_item.name = Name(value=request.body.name)
+        if is_set(request.body.payroll_type):
+            payroll_item.payroll_type = request.body.payroll_type
+        if is_set(request.body.calc_type):
+            payroll_item.calc_type = request.body.calc_type
+        if is_set(request.body.value):
+            payroll_item.value = request.body.value
 
         await self._check_unique(payroll_item)
         await self._payroll_item_repository.update(payroll_item)
@@ -79,4 +84,4 @@ class UpdatePayrollItem(Interactor[UpdatePayrollItemRequest, UpdatePayrollItemRe
 
     def _check_access(self, current_user: User) -> None:
         if current_user.role < UserRole.ACCOUNTANT:
-            raise AccessDeniedError("You don't have permission to delete payroll items")
+            raise AccessDeniedError("You don't have permission to update payroll items")

@@ -20,17 +20,22 @@ if TYPE_CHECKING:
 
 
 @dto
-class BindEmployeeByCodeRequest:
-    id: UserId
+class BindEmployeeBody:
     employee_code: str | None  # None => unbind
 
 
 @dto
-class BindEmployeeByCodeResponse:
+class BindEmployeeRequest:
+    id: UserId
+    body: BindEmployeeBody
+
+
+@dto
+class BindEmployeeResponse:
     user: UserView
 
 
-class BindEmployeeByCode(Interactor[BindEmployeeByCodeRequest, BindEmployeeByCodeResponse]):
+class BindEmployee(Interactor[BindEmployeeRequest, BindEmployeeResponse]):
     def __init__(
         self,
         user_repository: IUserRepository,
@@ -45,7 +50,7 @@ class BindEmployeeByCode(Interactor[BindEmployeeByCodeRequest, BindEmployeeByCod
         self._uow: ITransactionManager = transaction_manager
         self._idp: IIdentityProvider = identity_provider
 
-    async def execute(self, request: BindEmployeeByCodeRequest) -> BindEmployeeByCodeResponse:
+    async def execute(self, request: BindEmployeeRequest) -> BindEmployeeResponse:
         current_user: User = await self._idp.get_user()
         self._check_access(current_user, request.id)
 
@@ -53,10 +58,10 @@ class BindEmployeeByCode(Interactor[BindEmployeeByCodeRequest, BindEmployeeByCod
         if user is None:
             raise NotFoundError(f"User with id '{request.id}' not found")
 
-        if request.employee_code is None:
+        if request.body.employee_code is None:
             user.employee_id = None
         else:
-            code: Code = Code.from_str(request.employee_code)
+            code: Code = Code.from_str(request.body.employee_code)
             employee: Employee | None = await self._employee_reader.find_by_code(code)
             if employee is None:
                 raise NotFoundError(f"Employee with code '{code.value}' not found")
@@ -67,7 +72,7 @@ class BindEmployeeByCode(Interactor[BindEmployeeByCodeRequest, BindEmployeeByCod
         await self._user_repository.update(user)
         await self._uow.commit()
 
-        return BindEmployeeByCodeResponse(user=UserView.from_domain(user))
+        return BindEmployeeResponse(user=UserView.from_domain(user))
 
     async def _check_unique(self, user: User) -> None:
         if user.employee_id is None:

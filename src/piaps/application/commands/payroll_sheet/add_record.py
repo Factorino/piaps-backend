@@ -29,11 +29,16 @@ if TYPE_CHECKING:
 
 
 @dto
-class AddPayrollRecordRequest:
-    payroll_sheet_id: PayrollSheetId
+class AddPayrollRecordBody:
     payroll_item_id: PayrollItemId
     amount: Decimal | None = None  # None => calculated by the service
     comment: str | None = None
+
+
+@dto
+class AddPayrollRecordRequest:
+    payroll_sheet_id: PayrollSheetId
+    body: AddPayrollRecordBody
 
 
 @dto
@@ -73,14 +78,14 @@ class AddPayrollRecord(Interactor[AddPayrollRecordRequest, AddPayrollRecordRespo
             raise NotFoundError(f"Payroll sheet with id '{request.payroll_sheet_id}' not found")
 
         payroll_item: PayrollItem | None = await self._payroll_item_reader.find_by_id(
-            request.payroll_item_id
+            request.body.payroll_item_id
         )
         if payroll_item is None:
-            raise NotFoundError(f"Payroll item with id '{request.payroll_item_id}' not found")
+            raise NotFoundError(f"Payroll item with id '{request.body.payroll_item_id}' not found")
 
         base_salary: Money = await self._resolve_base_salary(payroll_sheet.employee_id)
         override: Money | None = (
-            Money(value=request.amount) if request.amount is not None else None
+            Money(value=request.body.amount) if request.body.amount is not None else None
         )
         amount: Money = self._payroll_service.calculate(
             payroll_item=payroll_item,
@@ -94,7 +99,7 @@ class AddPayrollRecord(Interactor[AddPayrollRecordRequest, AddPayrollRecordRespo
             payroll_item=payroll_item,
             period=payroll_sheet.period,
             amount=amount,
-            comment=request.comment,
+            comment=request.body.comment,
         )
 
         payroll_sheet.add_record(record)
