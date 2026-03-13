@@ -2,7 +2,7 @@ from typing import Annotated
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Body, Depends, status
 
 from piaps.application.commands.payroll_sheet.add_record import (
     AddPayrollRecord,
@@ -60,7 +60,7 @@ async def create_payroll_sheet(
 @router.post("/{payroll_sheet_id}/records", status_code=status.HTTP_200_OK)
 async def add_payroll_record(
     payroll_sheet_id: PayrollSheetId,
-    data: AddPayrollRecordData,
+    data: Annotated[AddPayrollRecordData, Body()],
     interactor: FromDishka[AddPayrollRecord],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> AddPayrollRecordResponse:

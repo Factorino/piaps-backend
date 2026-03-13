@@ -32,6 +32,7 @@ dependencies = [
     "jinja2>=3.1.6",
     "mypy>=1.19.1",
     "pyjwt[crypto]>=2.11.0",
+    "python-multipart>=0.0.22",
     "ruff>=0.15.0",
     "sqlalchemy[aiosqlite]>=2.0.48",
     "uvicorn>=0.41.0",

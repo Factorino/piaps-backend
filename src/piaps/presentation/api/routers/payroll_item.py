@@ -2,7 +2,7 @@ from typing import Annotated
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Body, Depends, status
 
 from piaps.application.commands.payroll_item.create import (
     CreatePayrollItem,
@@ -48,7 +48,7 @@ async def create_payroll_item(
 @router.patch("/{payroll_item_id}", status_code=status.HTTP_200_OK)
 async def update_payroll_item(
     payroll_item_id: PayrollItemId,
-    data: UpdatePayrollItemData,
+    data: Annotated[UpdatePayrollItemData, Body()],
     interactor: FromDishka[UpdatePayrollItem],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> UpdatePayrollItemResponse:

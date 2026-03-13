@@ -2,7 +2,7 @@ from typing import Annotated
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Body, Depends, status
 
 from piaps.application.commands.position.create import (
     CreatePosition,
@@ -45,7 +45,7 @@ async def create_position(
 @router.patch("/{position_id}", status_code=status.HTTP_200_OK)
 async def update_position(
     position_id: PositionId,
-    data: UpdatePositionData,
+    data: Annotated[UpdatePositionData, Body()],
     interactor: FromDishka[UpdatePosition],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> UpdatePositionResponse:

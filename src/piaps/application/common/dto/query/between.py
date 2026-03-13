@@ -1,20 +1,13 @@
 import calendar
 from datetime import date
-from typing import Any, Protocol, Self
+from typing import Self
 
 from piaps.application.common.dto.base import dto
 from piaps.domain.errors.base import ValidationError
 
 
-class _SupportsOrdering(Protocol):
-    def __lt__(self, *args: Any, **kwargs: Any) -> bool: ...
-    def __le__(self, *args: Any, **kwargs: Any) -> bool: ...
-    def __gt__(self, *args: Any, **kwargs: Any) -> bool: ...
-    def __ge__(self, *args: Any, **kwargs: Any) -> bool: ...
-
-
 @dto
-class Between[T: _SupportsOrdering]:
+class Between[T]:
     value_from: T | None = None
     value_to: T | None = None
 
@@ -25,7 +18,7 @@ class Between[T: _SupportsOrdering]:
         if (
             self.value_from is not None
             and self.value_to is not None
-            and self.value_from > self.value_to
+            and self.value_from > self.value_to  # pyright: ignore[reportOperatorIssue]
         ):
             raise ValidationError("'from' value must be less than or equal to 'to' value")
 

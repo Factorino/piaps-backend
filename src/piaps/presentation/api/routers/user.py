@@ -2,7 +2,7 @@ from typing import Annotated
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Body, Depends, status
 
 from piaps.application.commands.user.bind_employee import (
     BindEmployee,
@@ -73,7 +73,7 @@ async def delete_user(
 @router.patch("/{user_id}/username", status_code=status.HTTP_200_OK)
 async def change_username(
     user_id: UserId,
-    data: ChangeUsernameData,
+    data: Annotated[ChangeUsernameData, Body()],
     interactor: FromDishka[ChangeUsername],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> ChangeUsernameResponse:
@@ -83,7 +83,7 @@ async def change_username(
 @router.patch("/{user_id}/password", status_code=status.HTTP_200_OK)
 async def change_password(
     user_id: UserId,
-    data: ChangePasswordData,
+    data: Annotated[ChangePasswordData, Body()],
     interactor: FromDishka[ChangePassword],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> ChangePasswordResponse:
@@ -93,7 +93,7 @@ async def change_password(
 @router.patch("/{user_id}/role", status_code=status.HTTP_200_OK)
 async def change_role(
     user_id: UserId,
-    data: ChangeUserRoleData,
+    data: Annotated[ChangeUserRoleData, Body()],
     interactor: FromDishka[ChangeUserRole],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> ChangeUserRoleResponse:
@@ -103,7 +103,7 @@ async def change_role(
 @router.patch("/{user_id}/employee", status_code=status.HTTP_200_OK)
 async def bind_employee(
     user_id: UserId,
-    data: BindEmployeeData,
+    data: Annotated[BindEmployeeData, Body()],
     interactor: FromDishka[BindEmployee],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> BindEmployeeResponse:
