@@ -1,7 +1,10 @@
+from collections.abc import Callable
 from enum import StrEnum
 from types import MappingProxyType
 from typing import ClassVar
 
+from adaptix import P
+from adaptix.conversion import link
 from sqlalchemy.orm import InstrumentedAttribute
 
 from piaps.application.common.dto.query.filter import Filter
@@ -18,8 +21,19 @@ from piaps.application.interfaces.readers.payroll_item import (
 from piaps.domain.entities.payroll_item import PayrollItem, PayrollItemId
 from piaps.domain.value_objects.code import Code
 from piaps.domain.value_objects.name import Name
+from piaps.infrastructure.database.common.mapper import get_mapper
 from piaps.infrastructure.database.models.payroll_item import PayrollItemORM
 from piaps.infrastructure.database.readers.base import SAAbstractReader
+
+
+_to_domain: Callable[[PayrollItemORM], PayrollItem] = get_mapper(
+    PayrollItemORM,
+    PayrollItem,
+    recipe=[
+        link(P[PayrollItemORM].code, P[PayrollItem].code, coercer=Code.from_str),
+        link(P[PayrollItemORM].name, P[PayrollItem].name, coercer=lambda n: Name(value=n)),
+    ],
+)
 
 
 class SAPayrollItemReader(SAAbstractReader[PayrollItem, PayrollItemORM]):
@@ -61,4 +75,4 @@ class SAPayrollItemReader(SAAbstractReader[PayrollItem, PayrollItemORM]):
         return await self._search(filter, sort, pagination)
 
     def _to_domain(self, orm_obj: PayrollItemORM) -> PayrollItem:
-        raise NotImplementedError  # TODO: adaptix converter
+        return _to_domain(orm_obj)

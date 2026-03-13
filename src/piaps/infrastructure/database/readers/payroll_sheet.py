@@ -17,9 +17,43 @@ from piaps.application.interfaces.readers.payroll_sheet import (
     PayrollSheetSortField,
 )
 from piaps.domain.entities.employee import EmployeeId
+from piaps.domain.entities.payroll_item import PayrollItem
+from piaps.domain.entities.payroll_record import PayrollRecord
 from piaps.domain.entities.payroll_sheet import PayrollSheet, PayrollSheetId
+from piaps.domain.value_objects.code import Code
+from piaps.domain.value_objects.money import Money
+from piaps.domain.value_objects.name import Name
+from piaps.infrastructure.database.models.payroll_record import PayrollRecordORM
 from piaps.infrastructure.database.models.payroll_sheet import PayrollSheetORM
 from piaps.infrastructure.database.readers.base import SAAbstractReader
+
+
+def _record_orm_to_domain(record: PayrollRecordORM) -> PayrollRecord:
+    return PayrollRecord(
+        id=record.id,
+        employee_id=record.employee_id,
+        payroll_item=PayrollItem(
+            id=record.payroll_item.id,
+            code=Code.from_str(record.payroll_item.code),
+            name=Name(value=record.payroll_item.name),
+            payroll_type=record.payroll_item.payroll_type,
+            calc_type=record.payroll_item.calc_type,
+            value=record.payroll_item.value,
+        ),
+        period=record.period,
+        amount=Money(value=record.amount),
+        comment=record.comment,
+    )
+
+
+def _sheet_orm_to_domain(sheet: PayrollSheetORM) -> PayrollSheet:
+    return PayrollSheet(
+        id=sheet.id,
+        employee_id=sheet.employee_id,
+        period=sheet.period,
+        status=sheet.status,
+        records=[_record_orm_to_domain(r) for r in sheet.records],
+    )
 
 
 class SAPayrollSheetReader(SAAbstractReader[PayrollSheet, PayrollSheetORM]):
@@ -62,4 +96,4 @@ class SAPayrollSheetReader(SAAbstractReader[PayrollSheet, PayrollSheetORM]):
         return await self._search(filter, sort, pagination)
 
     def _to_domain(self, orm_obj: PayrollSheetORM) -> PayrollSheet:
-        raise NotImplementedError  # TODO: adaptix converter
+        return _sheet_orm_to_domain(orm_obj)

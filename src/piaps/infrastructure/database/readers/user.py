@@ -1,7 +1,10 @@
+from collections.abc import Callable
 from enum import StrEnum
 from types import MappingProxyType
 from typing import ClassVar
 
+from adaptix import P
+from adaptix.conversion import link
 from sqlalchemy.orm import InstrumentedAttribute
 
 from piaps.application.common.dto.query.filter import Filter
@@ -18,8 +21,18 @@ from piaps.application.interfaces.readers.user import (
 from piaps.domain.entities.employee import EmployeeId
 from piaps.domain.entities.user import User, UserId
 from piaps.domain.value_objects.username import Username
+from piaps.infrastructure.database.common.mapper import get_mapper
 from piaps.infrastructure.database.models.user import UserORM
 from piaps.infrastructure.database.readers.base import SAAbstractReader
+
+
+_to_domain: Callable[[UserORM], User] = get_mapper(
+    UserORM,
+    User,
+    recipe=[
+        link(P[UserORM].username, P[User].username, coercer=lambda u: Username(value=u)),
+    ],
+)
 
 
 class SAUserReader(SAAbstractReader[User, UserORM]):
@@ -57,4 +70,4 @@ class SAUserReader(SAAbstractReader[User, UserORM]):
         return await self._search(filter, sort, pagination)
 
     def _to_domain(self, orm_obj: UserORM) -> User:
-        raise NotImplementedError  # TODO: adaptix converter
+        return _to_domain(orm_obj)

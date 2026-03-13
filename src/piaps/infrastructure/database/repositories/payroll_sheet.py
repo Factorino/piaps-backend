@@ -23,8 +23,8 @@ def _sheet_entity_to_orm(sheet: PayrollSheet) -> PayrollSheetORM:
         employee_id=sheet.employee_id,
         period=sheet.period,
         status=sheet.status,
+        records=[_record_entity_to_orm(r, sheet.id) for r in sheet.records]
     )
-    orm.records = [_record_entity_to_orm(r, sheet.id) for r in sheet.records]
     return orm
 
 
