@@ -15,7 +15,7 @@ from piaps.application.commands.payroll_item.delete import (
 )
 from piaps.application.commands.payroll_item.update import (
     UpdatePayrollItem,
-    UpdatePayrollItemBody,
+    UpdatePayrollItemData,
     UpdatePayrollItemRequest,
     UpdatePayrollItemResponse,
 )
@@ -48,11 +48,11 @@ async def create_payroll_item(
 @router.patch("/{payroll_item_id}", status_code=status.HTTP_200_OK)
 async def update_payroll_item(
     payroll_item_id: PayrollItemId,
-    body: UpdatePayrollItemBody,
+    data: UpdatePayrollItemData,
     interactor: FromDishka[UpdatePayrollItem],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> UpdatePayrollItemResponse:
-    return await interactor.execute(UpdatePayrollItemRequest(id=payroll_item_id, body=body))
+    return await interactor.execute(UpdatePayrollItemRequest(id=payroll_item_id, data=data))
 
 
 @router.delete("/{payroll_item_id}", status_code=status.HTTP_204_NO_CONTENT)

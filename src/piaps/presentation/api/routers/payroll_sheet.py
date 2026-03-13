@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, status
 
 from piaps.application.commands.payroll_sheet.add_record import (
     AddPayrollRecord,
-    AddPayrollRecordBody,
+    AddPayrollRecordData,
     AddPayrollRecordRequest,
     AddPayrollRecordResponse,
 )
@@ -60,12 +60,12 @@ async def create_payroll_sheet(
 @router.post("/{payroll_sheet_id}/records", status_code=status.HTTP_200_OK)
 async def add_payroll_record(
     payroll_sheet_id: PayrollSheetId,
-    body: AddPayrollRecordBody,
+    data: AddPayrollRecordData,
     interactor: FromDishka[AddPayrollRecord],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> AddPayrollRecordResponse:
     return await interactor.execute(
-        AddPayrollRecordRequest(payroll_sheet_id=payroll_sheet_id, body=body)
+        AddPayrollRecordRequest(payroll_sheet_id=payroll_sheet_id, data=data)
     )
 
 

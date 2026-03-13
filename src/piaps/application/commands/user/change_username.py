@@ -13,14 +13,14 @@ from piaps.domain.value_objects.username import Username
 
 
 @dto
-class ChangeUsernameBody:
+class ChangeUsernameData:
     username: str
 
 
 @dto
 class ChangeUsernameRequest:
     id: UserId
-    body: ChangeUsernameBody
+    data: ChangeUsernameData
 
 
 @dto
@@ -49,7 +49,7 @@ class ChangeUsername(Interactor[ChangeUsernameRequest, ChangeUsernameResponse]):
         if user is None:
             raise NotFoundError(f"User with id '{request.id}' not found")
 
-        user.username = Username(value=request.body.username)
+        user.username = Username(value=request.data.username)
 
         await self._check_unique(user)
         await self._user_repository.update(user)

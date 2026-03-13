@@ -12,7 +12,7 @@ from piaps.application.commands.position.create import (
 from piaps.application.commands.position.delete import DeletePosition, DeletePositionRequest
 from piaps.application.commands.position.update import (
     UpdatePosition,
-    UpdatePositionBody,
+    UpdatePositionData,
     UpdatePositionRequest,
     UpdatePositionResponse,
 )
@@ -45,11 +45,11 @@ async def create_position(
 @router.patch("/{position_id}", status_code=status.HTTP_200_OK)
 async def update_position(
     position_id: PositionId,
-    body: UpdatePositionBody,
+    data: UpdatePositionData,
     interactor: FromDishka[UpdatePosition],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> UpdatePositionResponse:
-    return await interactor.execute(UpdatePositionRequest(id=position_id, body=body))
+    return await interactor.execute(UpdatePositionRequest(id=position_id, data=data))
 
 
 @router.delete("/{position_id}", status_code=status.HTTP_204_NO_CONTENT)

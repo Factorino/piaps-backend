@@ -19,7 +19,7 @@ from piaps.domain.value_objects.name import Name
 
 
 @dto
-class UpdatePayrollItemBody:
+class UpdatePayrollItemData:
     name: str | NotSet = NOTSET
     payroll_type: PayrollItemType | NotSet = NOTSET
     calc_type: PayrollCalculationType | NotSet = NOTSET
@@ -29,7 +29,7 @@ class UpdatePayrollItemBody:
 @dto
 class UpdatePayrollItemRequest:
     id: PayrollItemId
-    body: UpdatePayrollItemBody
+    data: UpdatePayrollItemData
 
 
 @dto
@@ -58,14 +58,14 @@ class UpdatePayrollItem(Interactor[UpdatePayrollItemRequest, UpdatePayrollItemRe
         if payroll_item is None:
             raise NotFoundError(f"Payroll item with id '{request.id}' not found")
 
-        if is_set(request.body.name):
-            payroll_item.name = Name(value=request.body.name)
-        if is_set(request.body.payroll_type):
-            payroll_item.payroll_type = request.body.payroll_type
-        if is_set(request.body.calc_type):
-            payroll_item.calc_type = request.body.calc_type
-        if is_set(request.body.value):
-            payroll_item.value = request.body.value
+        if is_set(request.data.name):
+            payroll_item.name = Name(value=request.data.name)
+        if is_set(request.data.payroll_type):
+            payroll_item.payroll_type = request.data.payroll_type
+        if is_set(request.data.calc_type):
+            payroll_item.calc_type = request.data.calc_type
+        if is_set(request.data.value):
+            payroll_item.value = request.data.value
 
         await self._check_unique(payroll_item)
         await self._payroll_item_repository.update(payroll_item)

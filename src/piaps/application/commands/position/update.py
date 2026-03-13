@@ -18,7 +18,7 @@ from piaps.domain.value_objects.name import Name
 
 
 @dto
-class UpdatePositionBody:
+class UpdatePositionData:
     name: str | NotSet = NOTSET
     base_salary: Decimal | NotSet = NOTSET
     description: str | None | NotSet = NOTSET
@@ -27,7 +27,7 @@ class UpdatePositionBody:
 @dto
 class UpdatePositionRequest:
     id: PositionId
-    body: UpdatePositionBody
+    data: UpdatePositionData
 
 
 @dto
@@ -56,12 +56,12 @@ class UpdatePosition(Interactor[UpdatePositionRequest, UpdatePositionResponse]):
         if position is None:
             raise NotFoundError(f"Position with id '{request.id}' not found")
 
-        if is_set(request.body.name):
-            position.name = Name(value=request.body.name)
-        if is_set(request.body.base_salary):
-            position.base_salary = Money(value=request.body.base_salary)
-        if is_set(request.body.description):
-            position.description = request.body.description
+        if is_set(request.data.name):
+            position.name = Name(value=request.data.name)
+        if is_set(request.data.base_salary):
+            position.base_salary = Money(value=request.data.base_salary)
+        if is_set(request.data.description):
+            position.description = request.data.description
 
         await self._check_unique(position)
         await self._position_repository.update(position)

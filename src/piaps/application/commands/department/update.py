@@ -15,7 +15,7 @@ from piaps.domain.value_objects.name import Name
 
 
 @dto
-class UpdateDepartmentBody:
+class UpdateDepartmentData:
     name: str | NotSet = NOTSET
     description: str | None | NotSet = NOTSET
 
@@ -23,7 +23,7 @@ class UpdateDepartmentBody:
 @dto
 class UpdateDepartmentRequest:
     id: DepartmentId
-    body: UpdateDepartmentBody
+    data: UpdateDepartmentData
 
 
 @dto
@@ -52,10 +52,10 @@ class UpdateDepartment(Interactor[UpdateDepartmentRequest, UpdateDepartmentRespo
         if department is None:
             raise NotFoundError(f"Department with id '{request.id}' not found")
 
-        if is_set(request.body.name):
-            department.name = Name(value=request.body.name)
-        if is_set(request.body.description):
-            department.description = request.body.description
+        if is_set(request.data.name):
+            department.name = Name(value=request.data.name)
+        if is_set(request.data.description):
+            department.description = request.data.description
 
         await self._check_unique(department)
         await self._department_repository.update(department)

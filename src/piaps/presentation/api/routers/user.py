@@ -6,25 +6,25 @@ from fastapi import APIRouter, Depends, status
 
 from piaps.application.commands.user.bind_employee import (
     BindEmployee,
-    BindEmployeeBody,
+    BindEmployeeData,
     BindEmployeeRequest,
     BindEmployeeResponse,
 )
 from piaps.application.commands.user.change_password import (
     ChangePassword,
-    ChangePasswordBody,
+    ChangePasswordData,
     ChangePasswordRequest,
     ChangePasswordResponse,
 )
 from piaps.application.commands.user.change_role import (
     ChangeUserRole,
-    ChangeUserRoleBody,
+    ChangeUserRoleData,
     ChangeUserRoleRequest,
     ChangeUserRoleResponse,
 )
 from piaps.application.commands.user.change_username import (
     ChangeUsername,
-    ChangeUsernameBody,
+    ChangeUsernameData,
     ChangeUsernameRequest,
     ChangeUsernameResponse,
 )
@@ -73,41 +73,41 @@ async def delete_user(
 @router.patch("/{user_id}/username", status_code=status.HTTP_200_OK)
 async def change_username(
     user_id: UserId,
-    body: ChangeUsernameBody,
+    data: ChangeUsernameData,
     interactor: FromDishka[ChangeUsername],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> ChangeUsernameResponse:
-    return await interactor.execute(ChangeUsernameRequest(id=user_id, body=body))
+    return await interactor.execute(ChangeUsernameRequest(id=user_id, data=data))
 
 
 @router.patch("/{user_id}/password", status_code=status.HTTP_200_OK)
 async def change_password(
     user_id: UserId,
-    body: ChangePasswordBody,
+    data: ChangePasswordData,
     interactor: FromDishka[ChangePassword],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> ChangePasswordResponse:
-    return await interactor.execute(ChangePasswordRequest(id=user_id, body=body))
+    return await interactor.execute(ChangePasswordRequest(id=user_id, data=data))
 
 
 @router.patch("/{user_id}/role", status_code=status.HTTP_200_OK)
 async def change_role(
     user_id: UserId,
-    body: ChangeUserRoleBody,
+    data: ChangeUserRoleData,
     interactor: FromDishka[ChangeUserRole],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> ChangeUserRoleResponse:
-    return await interactor.execute(ChangeUserRoleRequest(id=user_id, body=body))
+    return await interactor.execute(ChangeUserRoleRequest(id=user_id, data=data))
 
 
 @router.patch("/{user_id}/employee", status_code=status.HTTP_200_OK)
 async def bind_employee(
     user_id: UserId,
-    body: BindEmployeeBody,
+    data: BindEmployeeData,
     interactor: FromDishka[BindEmployee],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> BindEmployeeResponse:
-    return await interactor.execute(BindEmployeeRequest(id=user_id, body=body))
+    return await interactor.execute(BindEmployeeRequest(id=user_id, data=data))
 
 
 @router.get("/me", status_code=status.HTTP_200_OK)

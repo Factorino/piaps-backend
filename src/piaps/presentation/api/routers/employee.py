@@ -12,7 +12,7 @@ from piaps.application.commands.employee.create import (
 from piaps.application.commands.employee.delete import DeleteEmployee, DeleteEmployeeRequest
 from piaps.application.commands.employee.update import (
     UpdateEmployee,
-    UpdateEmployeeBody,
+    UpdateEmployeeData,
     UpdateEmployeeRequest,
     UpdateEmployeeResponse,
 )
@@ -45,11 +45,11 @@ async def create_employee(
 @router.patch("/{employee_id}", status_code=status.HTTP_200_OK)
 async def update_employee(
     employee_id: EmployeeId,
-    body: UpdateEmployeeBody,
+    data: UpdateEmployeeData,
     interactor: FromDishka[UpdateEmployee],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> UpdateEmployeeResponse:
-    return await interactor.execute(UpdateEmployeeRequest(id=employee_id, body=body))
+    return await interactor.execute(UpdateEmployeeRequest(id=employee_id, data=data))
 
 
 @router.delete("/{employee_id}", status_code=status.HTTP_204_NO_CONTENT)

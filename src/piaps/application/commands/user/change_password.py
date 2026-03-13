@@ -14,7 +14,7 @@ from piaps.domain.value_objects.password import Password
 
 
 @dto
-class ChangePasswordBody:
+class ChangePasswordData:
     old_password: str | None  # None if the admin changes without the old one
     new_password: str
 
@@ -22,7 +22,7 @@ class ChangePasswordBody:
 @dto
 class ChangePasswordRequest:
     id: UserId
-    body: ChangePasswordBody
+    data: ChangePasswordData
 
 
 @dto
@@ -53,10 +53,10 @@ class ChangePassword(Interactor[ChangePasswordRequest, ChangePasswordResponse]):
         if user is None:
             raise NotFoundError(f"User with id '{request.id}' not found")
 
-        if request.body.old_password == request.body.new_password:
+        if request.data.old_password == request.data.new_password:
             raise ValidationError("New password cannot be the same as the old password")
 
-        password = Password(value=request.body.new_password)
+        password = Password(value=request.data.new_password)
         password_hash: bytes = self._password_hasher.hash_password(password)
 
         user.password_hash = password_hash
@@ -76,10 +76,10 @@ class ChangePassword(Interactor[ChangePasswordRequest, ChangePasswordResponse]):
         if is_admin:
             return
 
-        if not request.body.old_password:
+        if not request.data.old_password:
             raise AccessDeniedError("Old password is required")
 
         if not self._password_hasher.verify_password(
-            request.body.old_password, current_user.password_hash
+            request.data.old_password, current_user.password_hash
         ):
             raise AccessDeniedError("Old password is incorrect")

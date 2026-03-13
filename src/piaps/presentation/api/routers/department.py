@@ -12,7 +12,7 @@ from piaps.application.commands.department.create import (
 from piaps.application.commands.department.delete import DeleteDepartment, DeleteDepartmentRequest
 from piaps.application.commands.department.update import (
     UpdateDepartment,
-    UpdateDepartmentBody,
+    UpdateDepartmentData,
     UpdateDepartmentRequest,
     UpdateDepartmentResponse,
 )
@@ -45,11 +45,11 @@ async def create_department(
 @router.patch("/{department_id}", status_code=status.HTTP_200_OK)
 async def update_department(
     department_id: DepartmentId,
-    body: UpdateDepartmentBody,
+    data: UpdateDepartmentData,
     interactor: FromDishka[UpdateDepartment],
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> UpdateDepartmentResponse:
-    return await interactor.execute(UpdateDepartmentRequest(id=department_id, body=body))
+    return await interactor.execute(UpdateDepartmentRequest(id=department_id, data=data))
 
 
 @router.delete("/{department_id}", status_code=status.HTTP_204_NO_CONTENT)

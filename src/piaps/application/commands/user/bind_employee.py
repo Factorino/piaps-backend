@@ -20,14 +20,14 @@ if TYPE_CHECKING:
 
 
 @dto
-class BindEmployeeBody:
+class BindEmployeeData:
     employee_code: str | None  # None => unbind
 
 
 @dto
 class BindEmployeeRequest:
     id: UserId
-    body: BindEmployeeBody
+    data: BindEmployeeData
 
 
 @dto
@@ -58,10 +58,10 @@ class BindEmployee(Interactor[BindEmployeeRequest, BindEmployeeResponse]):
         if user is None:
             raise NotFoundError(f"User with id '{request.id}' not found")
 
-        if request.body.employee_code is None:
+        if request.data.employee_code is None:
             user.employee_id = None
         else:
-            code: Code = Code.from_str(request.body.employee_code)
+            code: Code = Code.from_str(request.data.employee_code)
             employee: Employee | None = await self._employee_reader.find_by_code(code)
             if employee is None:
                 raise NotFoundError(f"Employee with code '{code.value}' not found")
