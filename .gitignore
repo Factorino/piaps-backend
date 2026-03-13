@@ -224,3 +224,6 @@ config/config.toml
 
 # Logs
 logs/
+
+# Dev data
+data/
