@@ -1,4 +1,3 @@
-from piaps.application.interfaces.repositories.payroll_sheet import IPayrollSheetRepository
 from piaps.domain.entities.payroll_record import PayrollRecord
 from piaps.domain.entities.payroll_sheet import PayrollSheet, PayrollSheetId
 from piaps.infrastructure.database.models.payroll_record import PayrollRecordORM
@@ -29,8 +28,6 @@ def _sheet_entity_to_orm(sheet: PayrollSheet) -> PayrollSheetORM:
     return orm
 
 
-class SAPayrollSheetRepository(
-    IPayrollSheetRepository, SAAbstractRepository[PayrollSheet, PayrollSheetORM]
-):
+class SAPayrollSheetRepository(SAAbstractRepository[PayrollSheet, PayrollSheetORM]):
     def _to_orm(self, entity: PayrollSheet) -> PayrollSheetORM:
         return _sheet_entity_to_orm(entity)

@@ -3,7 +3,6 @@ from collections.abc import Callable
 from adaptix import P
 from adaptix.conversion import link
 
-from piaps.application.interfaces.repositories.position import IPositionRepository
 from piaps.domain.entities.position import Position
 from piaps.infrastructure.database.common.mapper import get_mapper
 from piaps.infrastructure.database.models.position import PositionORM
@@ -21,6 +20,6 @@ _to_orm: Callable[[Position], PositionORM] = get_mapper(
 )
 
 
-class SAPositionRepository(IPositionRepository, SAAbstractRepository[Position, PositionORM]):
+class SAPositionRepository(SAAbstractRepository[Position, PositionORM]):
     def _to_orm(self, entity: Position) -> PositionORM:
         return _to_orm(entity)

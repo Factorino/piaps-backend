@@ -14,7 +14,6 @@ from piaps.application.common.dto.query.sort import Sort
 from piaps.application.interfaces.readers.employee import (
     EmployeeFilterField,
     EmployeeSortField,
-    IEmployeeReader,
 )
 from piaps.domain.entities.employee import Employee, EmployeeId
 from piaps.domain.value_objects.code import Code
@@ -22,7 +21,7 @@ from piaps.infrastructure.database.models.employee import EmployeeORM
 from piaps.infrastructure.database.readers.base import SAAbstractReader
 
 
-class SAEmployeeReader(IEmployeeReader, SAAbstractReader[Employee, EmployeeORM]):
+class SAEmployeeReader(SAAbstractReader[Employee, EmployeeORM]):
     _model = EmployeeORM
 
     _filter_map: ClassVar[MappingProxyType[StrEnum, InstrumentedAttribute]] = MappingProxyType(

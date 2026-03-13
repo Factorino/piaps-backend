@@ -12,7 +12,6 @@ from piaps.application.common.dto.query.pagination import (
 )
 from piaps.application.common.dto.query.sort import Sort
 from piaps.application.interfaces.readers.user import (
-    IUserReader,
     UserFilterField,
     UserSortField,
 )
@@ -23,7 +22,7 @@ from piaps.infrastructure.database.models.user import UserORM
 from piaps.infrastructure.database.readers.base import SAAbstractReader
 
 
-class SAUserReader(IUserReader, SAAbstractReader[User, UserORM]):
+class SAUserReader(SAAbstractReader[User, UserORM]):
     _model = UserORM
 
     _filter_map: ClassVar[MappingProxyType[StrEnum, InstrumentedAttribute]] = MappingProxyType(

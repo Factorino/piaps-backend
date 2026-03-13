@@ -3,7 +3,6 @@ from collections.abc import Callable
 from adaptix import P
 from adaptix.conversion import link
 
-from piaps.application.interfaces.repositories.user import IUserRepository
 from piaps.domain.entities.user import User
 from piaps.infrastructure.database.common.mapper import get_mapper
 from piaps.infrastructure.database.models.user import UserORM
@@ -19,6 +18,6 @@ _to_orm: Callable[[User], UserORM] = get_mapper(
 )
 
 
-class SAUserRepository(IUserRepository, SAAbstractRepository[User, UserORM]):
+class SAUserRepository(SAAbstractRepository[User, UserORM]):
     def _to_orm(self, entity: User) -> UserORM:
         return _to_orm(entity)

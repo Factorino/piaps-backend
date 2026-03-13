@@ -22,7 +22,6 @@ from piaps.application.common.dto.report.payroll_summary import (
     PayrollSummaryReportData,
 )
 from piaps.application.errors.base import OperationFailedError
-from piaps.application.interfaces.readers.report import IPayrollReportReader
 from piaps.domain.entities.department import DepartmentId
 from piaps.domain.entities.employee import EmployeeId
 from piaps.domain.enums.payroll_item_type import PayrollItemType
@@ -52,7 +51,7 @@ class _EmployeeInfo(NamedTuple):
     base_salary: Decimal
 
 
-class SAPayrollReportReader(IPayrollReportReader):
+class SAPayrollReportReader:
     def __init__(self, session: AsyncSession) -> None:
         self._session: AsyncSession = session
 

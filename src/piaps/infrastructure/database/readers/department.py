@@ -14,7 +14,6 @@ from piaps.application.common.dto.query.sort import Sort
 from piaps.application.interfaces.readers.department import (
     DepartmentFilterField,
     DepartmentSortField,
-    IDepartmentReader,
 )
 from piaps.domain.entities.department import Department, DepartmentId
 from piaps.domain.value_objects.code import Code
@@ -23,7 +22,7 @@ from piaps.infrastructure.database.models.department import DepartmentORM
 from piaps.infrastructure.database.readers.base import SAAbstractReader
 
 
-class SADepartmentReader(IDepartmentReader, SAAbstractReader[Department, DepartmentORM]):
+class SADepartmentReader(SAAbstractReader[Department, DepartmentORM]):
     _model = DepartmentORM
 
     _filter_map: ClassVar[MappingProxyType[StrEnum, InstrumentedAttribute]] = MappingProxyType(

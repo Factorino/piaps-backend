@@ -3,7 +3,6 @@ from collections.abc import Callable
 from adaptix import P
 from adaptix.conversion import link
 
-from piaps.application.interfaces.repositories.employee import IEmployeeRepository
 from piaps.domain.entities.employee import Employee
 from piaps.infrastructure.database.common.mapper import get_mapper
 from piaps.infrastructure.database.models.employee import EmployeeORM
@@ -20,6 +19,6 @@ _to_orm: Callable[[Employee], EmployeeORM] = get_mapper(
 )
 
 
-class SAEmployeeRepository(IEmployeeRepository, SAAbstractRepository[Employee, EmployeeORM]):
+class SAEmployeeRepository(SAAbstractRepository[Employee, EmployeeORM]):
     def _to_orm(self, entity: Employee) -> EmployeeORM:
         return _to_orm(entity)

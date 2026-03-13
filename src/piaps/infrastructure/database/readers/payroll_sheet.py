@@ -13,7 +13,6 @@ from piaps.application.common.dto.query.pagination import (
 )
 from piaps.application.common.dto.query.sort import Sort
 from piaps.application.interfaces.readers.payroll_sheet import (
-    IPayrollSheetReader,
     PayrollSheetFilterField,
     PayrollSheetSortField,
 )
@@ -23,7 +22,7 @@ from piaps.infrastructure.database.models.payroll_sheet import PayrollSheetORM
 from piaps.infrastructure.database.readers.base import SAAbstractReader
 
 
-class SAPayrollSheetReader(IPayrollSheetReader, SAAbstractReader[PayrollSheet, PayrollSheetORM]):
+class SAPayrollSheetReader(SAAbstractReader[PayrollSheet, PayrollSheetORM]):
     _model = PayrollSheetORM
 
     _filter_map: ClassVar[MappingProxyType[StrEnum, InstrumentedAttribute]] = MappingProxyType(
