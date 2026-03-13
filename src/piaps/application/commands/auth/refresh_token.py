@@ -42,10 +42,10 @@ class RefreshToken(Interactor[RefreshTokenRequest, RefreshTokenResponse]):
     async def execute(self, request: RefreshTokenRequest) -> RefreshTokenResponse:
         decoded: TokenData = self._jwt_provider.decode_token(request.refresh_token)
 
-        if decoded.type != TokenType.REFRESH:
+        if decoded.meta.type != TokenType.REFRESH:
             raise InvalidTokenError(f"Token type must be '{TokenType.REFRESH}'")
 
-        user: User | None = await self._user_reader.find_by_id(decoded.sub)
+        user: User | None = await self._user_reader.find_by_id(decoded.payload.sub)
         if user is None:
             raise AuthenticationError("User no longer exists")
 

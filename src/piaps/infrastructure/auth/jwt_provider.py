@@ -1,20 +1,22 @@
 from datetime import UTC, datetime, timedelta
+import json
 from typing import Any
 
-from adaptix import Retort
 import jwt
+from pydantic import TypeAdapter
 
 from piaps.application.errors.auth import InvalidTokenError, TokenExpiredError
 from piaps.application.errors.base import DataMapperError, OperationFailedError
 from piaps.application.interfaces.auth.jwt_provider import (
     IJWTProvider,
     TokenData,
+    TokenMeta,
     TokenPayload,
     TokenType,
 )
 
 
-_retort = Retort()
+_adapter: TypeAdapter[TokenData] = TypeAdapter(TokenData)
 
 
 class PyJWTProvider(IJWTProvider):
@@ -51,7 +53,7 @@ class PyJWTProvider(IJWTProvider):
             raise InvalidTokenError("Token is invalid") from e
 
         try:
-            return _retort.load(token_data, TokenData)
+            return _adapter.validate_python(token_data)
         except Exception as e:
             raise DataMapperError from e
 
@@ -63,15 +65,17 @@ class PyJWTProvider(IJWTProvider):
         exp = int((now + timedelta(minutes=ttl_minutes)).timestamp())
 
         token_data = TokenData(
-            sub=payload.sub,
-            role=payload.role,
-            type=token_type,
-            iat=int(now.timestamp()),
-            exp=exp,
+            payload=payload,
+            meta=TokenMeta(
+                type=token_type,
+                iat=int(now.timestamp()),
+                exp=exp,
+            ),
         )
 
         try:
-            data: dict[str, Any] = _retort.dump(token_data)
+            data_bytes: bytes = _adapter.dump_json(token_data)
+            data: dict[str, Any] = json.loads(data_bytes)
         except Exception as e:
             raise DataMapperError from e
 

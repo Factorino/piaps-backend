@@ -25,28 +25,28 @@ from piaps.presentation.api.dependencies import get_current_user_token
 router = APIRouter(prefix="/reports", tags=["Reports"], route_class=DishkaRoute)
 
 
-@router.get("/employee-payroll", status_code=status.HTTP_200_OK)
+@router.post("/employee-payroll", status_code=status.HTTP_200_OK)
 async def get_employee_payroll_report(
     interactor: FromDishka[GetEmployeePayrollReport],
-    request: Annotated[GetEmployeePayrollReportRequest, Depends()],
+    request: GetEmployeePayrollReportRequest,
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> GetEmployeePayrollReportResponse:
     return await interactor.execute(request)
 
 
-@router.get("/department-payroll", status_code=status.HTTP_200_OK)
+@router.post("/department-payroll", status_code=status.HTTP_200_OK)
 async def get_department_payroll_report(
     interactor: FromDishka[GetDepartmentPayrollReport],
-    request: Annotated[GetDepartmentPayrollReportRequest, Depends()],
+    request: GetDepartmentPayrollReportRequest,
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> GetDepartmentPayrollReportResponse:
     return await interactor.execute(request)
 
 
-@router.get("/payroll-summary", status_code=status.HTTP_200_OK)
+@router.post("/payroll-summary", status_code=status.HTTP_200_OK)
 async def get_payroll_summary_report(
     interactor: FromDishka[GetPayrollSummaryReport],
-    request: Annotated[GetPayrollSummaryReportRequest, Depends()],
+    request: GetPayrollSummaryReportRequest,
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> GetPayrollSummaryReportResponse:
     return await interactor.execute(request)

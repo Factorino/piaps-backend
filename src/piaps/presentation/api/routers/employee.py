@@ -70,10 +70,10 @@ async def get_employee_by_id(
     return await interactor.execute(GetEmployeeByIdRequest(id=employee_id))
 
 
-@router.get("", status_code=status.HTTP_200_OK)
+@router.post("/search", status_code=status.HTTP_200_OK)
 async def search_employees(
     interactor: FromDishka[SearchEmployees],
-    request: Annotated[SearchEmployeesRequest, Depends()],
+    request: SearchEmployeesRequest,
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> SearchEmployeesResponse:
     return await interactor.execute(request)

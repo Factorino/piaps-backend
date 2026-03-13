@@ -70,10 +70,10 @@ async def get_department_by_id(
     return await interactor.execute(GetDepartmentByIdRequest(id=department_id))
 
 
-@router.get("", status_code=status.HTTP_200_OK)
+@router.post("/search", status_code=status.HTTP_200_OK)
 async def search_departments(
     interactor: FromDishka[SearchDepartments],
-    request: Annotated[SearchDepartmentsRequest, Depends()],
+    request: SearchDepartmentsRequest,
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> SearchDepartmentsResponse:
     return await interactor.execute(request)

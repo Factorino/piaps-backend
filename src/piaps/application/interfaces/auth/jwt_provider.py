@@ -26,8 +26,9 @@ class TokenMeta:
 
 
 @dto
-class TokenData(TokenPayload, TokenMeta):
-    pass
+class TokenData:
+    payload: TokenPayload
+    meta: TokenMeta
 
 
 class IJWTProvider(Protocol):

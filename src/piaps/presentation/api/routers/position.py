@@ -70,10 +70,10 @@ async def get_position_by_id(
     return await interactor.execute(GetPositionByIdRequest(id=position_id))
 
 
-@router.get("", status_code=status.HTTP_200_OK)
+@router.post("/search", status_code=status.HTTP_200_OK)
 async def search_positions(
     interactor: FromDishka[SearchPositions],
-    request: Annotated[SearchPositionsRequest, Depends()],
+    request: SearchPositionsRequest,
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> SearchPositionsResponse:
     return await interactor.execute(request)

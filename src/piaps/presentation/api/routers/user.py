@@ -127,10 +127,10 @@ async def get_user_by_id(
     return await interactor.execute(GetUserByIdRequest(id=user_id))
 
 
-@router.get("", status_code=status.HTTP_200_OK)
+@router.post("/search", status_code=status.HTTP_200_OK)
 async def search_users(
     interactor: FromDishka[SearchUsers],
-    request: Annotated[SearchUsersRequest, Depends()],
+    request: SearchUsersRequest,
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> SearchUsersResponse:
     return await interactor.execute(request)

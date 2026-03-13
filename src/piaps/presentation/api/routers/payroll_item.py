@@ -73,10 +73,10 @@ async def get_payroll_item_by_id(
     return await interactor.execute(GetPayrollItemByIdRequest(id=payroll_item_id))
 
 
-@router.get("", status_code=status.HTTP_200_OK)
+@router.post("/search", status_code=status.HTTP_200_OK)
 async def search_payroll_items(
     interactor: FromDishka[SearchPayrollItems],
-    request: Annotated[SearchPayrollItemsRequest, Depends()],
+    request: SearchPayrollItemsRequest,
     _token: Annotated[str, Depends(get_current_user_token)],
 ) -> SearchPayrollItemsResponse:
     return await interactor.execute(request)

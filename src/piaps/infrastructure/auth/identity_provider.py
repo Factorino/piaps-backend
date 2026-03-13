@@ -28,10 +28,10 @@ class IdentityProvider(IIdentityProvider):
     async def _get_user_from_token(self) -> User:
         decoded: TokenData = self._jwt_provider.decode_token(self._token)
 
-        if decoded.type != TokenType.ACCESS:
+        if decoded.meta.type != TokenType.ACCESS:
             raise InvalidTokenError(f"Token type must be '{TokenType.ACCESS}'")
 
-        user: User | None = await self._user_reader.find_by_id(decoded.sub)
+        user: User | None = await self._user_reader.find_by_id(decoded.payload.sub)
 
         if user is None:
             raise AuthenticationError("User no longer exists")
