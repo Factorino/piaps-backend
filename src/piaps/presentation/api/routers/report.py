@@ -25,7 +25,7 @@ from piaps.presentation.api.dependencies import get_current_user_token
 router = APIRouter(prefix="/reports", tags=["Reports"], route_class=DishkaRoute)
 
 
-@router.post("/employee-payroll", status_code=status.HTTP_200_OK)
+@router.post("/employee", status_code=status.HTTP_200_OK)
 async def get_employee_payroll_report(
     interactor: FromDishka[GetEmployeePayrollReport],
     request: GetEmployeePayrollReportRequest,
@@ -34,7 +34,7 @@ async def get_employee_payroll_report(
     return await interactor.execute(request)
 
 
-@router.post("/department-payroll", status_code=status.HTTP_200_OK)
+@router.post("/department", status_code=status.HTTP_200_OK)
 async def get_department_payroll_report(
     interactor: FromDishka[GetDepartmentPayrollReport],
     request: GetDepartmentPayrollReportRequest,
@@ -43,7 +43,7 @@ async def get_department_payroll_report(
     return await interactor.execute(request)
 
 
-@router.post("/payroll-summary", status_code=status.HTTP_200_OK)
+@router.post("/summary", status_code=status.HTTP_200_OK)
 async def get_payroll_summary_report(
     interactor: FromDishka[GetPayrollSummaryReport],
     request: GetPayrollSummaryReportRequest,
