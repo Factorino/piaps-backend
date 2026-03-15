@@ -47,7 +47,7 @@
 | DTO | Поля |
 |-----|------|
 | **PayrollRecordView** | `id: UUID`, `employee_id: UUID`, `payroll_item: PayrollItemView`, `period: date`, `amount: Decimal`, `comment?: str` |
-| **PayrollSheetView** | `id: UUID`, `period: date`, `status: PayrollStatus`, `records: PayrollRecordView[]` |
+| **PayrollSheetView** | `id: UUID`, `employee_id: UUID`, `period: date`, `status: PayrollStatus`, `records: PayrollRecordView[]` |
 
 ## DTO: Query
 **Универсальная система фильтрации, сортировки и пагинации для всех списков.**

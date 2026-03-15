@@ -82,7 +82,7 @@ mypy-init-return = true
 ban-relative-imports = "all"
 
 [lint.isort]
-known-first-party = ["malbrew"]
+known-first-party = ["piaps"]
 combine-as-imports = true
 force-sort-within-sections = true
 lines-between-types = 1
