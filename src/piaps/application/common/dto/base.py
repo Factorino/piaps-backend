@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import dataclass_transform
 
 from pydantic import ConfigDict
