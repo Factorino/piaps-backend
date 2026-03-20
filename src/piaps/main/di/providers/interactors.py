@@ -74,10 +74,17 @@ class InteractorsProvider(Provider):
         self,
         user_repository: IUserRepository,
         user_reader: IUserReader,
+        employee_reader: IEmployeeReader,
         password_hasher: IPasswordHasher,
         transaction_manager: ITransactionManager,
     ) -> RegisterUser:
-        return RegisterUser(user_repository, user_reader, password_hasher, transaction_manager)
+        return RegisterUser(
+            user_repository,
+            user_reader,
+            employee_reader,
+            password_hasher,
+            transaction_manager,
+        )
 
     @provide
     def login_user(

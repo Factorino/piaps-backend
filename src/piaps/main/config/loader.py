@@ -12,8 +12,8 @@ from piaps.main.config.jwt import JWTConfig
 from piaps.main.config.renderer import RendererConfig
 
 
-DEFAULT_CONFIG_PATH = "./config/configs.toml"
-DEFAULT_SECRETS_PATH = "./config/secrets.toml"
+DEFAULT_CONFIG_PATH = "./configs/configs.toml"
+DEFAULT_SECRETS_PATH = "./configs/secrets.toml"
 
 _SCOPES: Final[MappingProxyType[type, str]] = MappingProxyType(
     {

@@ -59,8 +59,8 @@
       <tr>
         <td>{{ rec.payroll_item_code }}</td>
         <td>{{ rec.payroll_item_name }}</td>
-        <td class="{% if rec.payroll_type == 'ACCRUAL' %}type-accrual{% else %}type-deduction{% endif %}">
-          {% if rec.payroll_type == 'ACCRUAL' %}Начисление{% else %}Удержание{% endif %}
+        <td class="{% if rec.payroll_type == 'accrual' %}type-accrual{% else %}type-deduction{% endif %}">
+          {% if rec.payroll_type == 'accrual' %}Начисление{% else %}Удержание{% endif %}
         </td>
         <td class="amount">{{ "%.2f"|format(rec.amount|float) }} ₽</td>
         <td>{{ rec.comment or '—' }}</td>

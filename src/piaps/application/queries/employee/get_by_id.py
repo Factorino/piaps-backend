@@ -31,7 +31,7 @@ class GetEmployeeById(Interactor[GetEmployeeByIdRequest, GetEmployeeByIdResponse
 
     async def execute(self, request: GetEmployeeByIdRequest) -> GetEmployeeByIdResponse:
         current_user: User = await self._idp.get_user()
-        self._check_access(current_user)
+        self._check_access(current_user, request.id)
 
         employee: Employee | None = await self._employee_reader.find_by_id(request.id)
         if employee is None:
@@ -39,6 +39,9 @@ class GetEmployeeById(Interactor[GetEmployeeByIdRequest, GetEmployeeByIdResponse
 
         return GetEmployeeByIdResponse(employee=EmployeeView.from_domain(employee))
 
-    def _check_access(self, current_user: User) -> None:
+    def _check_access(self, current_user: User, target_employee_id: EmployeeId) -> None:
+        if current_user.employee_id == target_employee_id:
+            return
+
         if current_user.role < UserRole.ACCOUNTANT:
             raise AccessDeniedError("You don't have permission to read employees")

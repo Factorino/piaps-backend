@@ -78,7 +78,7 @@
 
 | Метод | Endpoint | Request | Response | Права |
 |-------|----------|---------|----------|-------|
-| `POST` | `/auth/register` | `{username: str, password: str}` | `{user: UserView}` | public |
+| `POST` | `/auth/register` | `{username: str, password: str, employee_code?: str}` | `{user: UserView}` | public |
 | `POST` | `/auth/login` | `{username: str, password: str}` | `{access_token, refresh_token, token_type: "Bearer", user}` | public |
 | `POST` | `/auth/refresh` | `{refresh_token: str}` | `{access_token, refresh_token, token_type, user}` | refresh token |
 

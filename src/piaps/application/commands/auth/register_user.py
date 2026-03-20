@@ -5,10 +5,12 @@ from piaps.application.common.dto.views.user import UserView
 from piaps.application.interfaces.auth.password_hasher import IPasswordHasher
 from piaps.application.interfaces.common.interactor import Interactor
 from piaps.application.interfaces.common.transaction_manager import ITransactionManager
+from piaps.application.interfaces.readers.employee import IEmployeeReader
 from piaps.application.interfaces.readers.user import IUserReader
 from piaps.application.interfaces.repositories.user import IUserRepository
 from piaps.domain.entities.user import User, UserId
-from piaps.domain.errors.base import AlreadyExistsError
+from piaps.domain.errors.base import AlreadyExistsError, NotFoundError
+from piaps.domain.value_objects.code import Code
 from piaps.domain.value_objects.password import Password
 from piaps.domain.value_objects.username import Username
 
@@ -17,6 +19,7 @@ from piaps.domain.value_objects.username import Username
 class RegisterUserRequest:
     username: str
     password: str
+    employee_code: str | None = None
 
 
 @dto
@@ -29,11 +32,13 @@ class RegisterUser(Interactor[RegisterUserRequest, RegisterUserResponse]):
         self,
         user_repository: IUserRepository,
         user_reader: IUserReader,
+        employee_reader: IEmployeeReader,
         password_hasher: IPasswordHasher,
         transaction_manager: ITransactionManager,
     ) -> None:
         self._user_repository: IUserRepository = user_repository
         self._user_reader: IUserReader = user_reader
+        self._employee_reader: IEmployeeReader = employee_reader
         self._password_hasher: IPasswordHasher = password_hasher
         self._uow: ITransactionManager = transaction_manager
 
@@ -45,7 +50,10 @@ class RegisterUser(Interactor[RegisterUserRequest, RegisterUserResponse]):
             id=UserId(uuid4()),
             username=Username(value=request.username),
             password_hash=password_hash,
+            employee_id=None,
         )
+
+        await self._bind_employee(user, request.employee_code)
 
         await self._check_unique(user)
         await self._user_repository.add(user)
@@ -53,7 +61,25 @@ class RegisterUser(Interactor[RegisterUserRequest, RegisterUserResponse]):
 
         return RegisterUserResponse(user=UserView.from_domain(user))
 
+    async def _bind_employee(self, user: User, employee_code: str | None) -> None:
+        if employee_code is None:
+            return
+
+        code: Code = Code.from_str(employee_code)
+        employee = await self._employee_reader.find_by_code(code)
+        if employee is None:
+            raise NotFoundError(f"Employee with code '{code.value}' not found")
+
+        user.employee_id = employee.id
+
     async def _check_unique(self, user: User) -> None:
         existing: User | None = await self._user_reader.find_by_username(user.username)
         if existing is not None:
             raise AlreadyExistsError(f"User with username '{user.username.value}' already exists")
+
+        if user.employee_id is None:
+            return
+
+        existing_binding: User | None = await self._user_reader.find_by_employee(user.employee_id)
+        if existing_binding is not None and existing_binding.id != user.id:
+            raise AlreadyExistsError(f"User with employee_id '{user.employee_id}' already exists")
