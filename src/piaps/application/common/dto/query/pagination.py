@@ -1,6 +1,8 @@
 import math
 from typing import ClassVar
 
+from pydantic import computed_field
+
 from piaps.application.common.dto.base import dto
 from piaps.domain.errors.base import ValidationError
 
@@ -46,14 +48,17 @@ class Pagination(BasePagination):
 class PaginationResultMeta(BasePagination):
     total: int
 
+    @computed_field
     @property
     def total_pages(self) -> int:
         return math.ceil(self.total / self.page_size)
 
+    @computed_field
     @property
     def has_next(self) -> bool:
         return self.page < self.total_pages
 
+    @computed_field
     @property
     def has_prev(self) -> bool:
         return self.page > 1
