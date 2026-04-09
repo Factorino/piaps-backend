@@ -2,14 +2,16 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from enum import StrEnum
 from types import MappingProxyType
-from typing import ClassVar, Final
+from typing import Any, ClassVar, Final
+from uuid import UUID
 
-from sqlalchemy import ColumnElement, Result, Select, asc, desc, func, select
+from sqlalchemy import UUID as SAUUID, ColumnElement, Result, Select, asc, desc, func, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql import operators
 from sqlalchemy.sql.operators import OperatorType
+from sqlalchemy.types import TypeEngine
 
 from piaps.application.common.dto.query.filter import (
     Filter,
@@ -54,6 +56,12 @@ _SORT_DIRECTION_MAP: Final[MappingProxyType[StrEnum, Callable]] = MappingProxyTy
         SortDirection.DESC: desc,
     }
 )
+
+
+def _normalize_value(value: Any, column_type: TypeEngine) -> Any:
+    if isinstance(column_type, SAUUID) and isinstance(value, str):
+        return UUID(value)
+    return value
 
 
 class SAAbstractReader[EntityT: Entity, ORMT: BaseORM](ABC):
@@ -141,7 +149,8 @@ class SAAbstractReader[EntityT: Entity, ORMT: BaseORM](ABC):
         for param in filter.params:
             operator: OperatorType = _OPERATORS_MAP[param.operator]
             column: InstrumentedAttribute = self._filter_map[param.field]
-            query = query.where(operator(column, param.value))
+            value: Any = _normalize_value(param.value, column.type)
+            query = query.where(operator(column, value))
 
         return query
 
